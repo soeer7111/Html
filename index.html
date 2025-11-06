@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player & User Auth</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div id="login-page" class="auth-container">
+        <h2>အသုံးပြုသူ ဝင်ရောက်ခြင်း (Login)</h2>
+        <div class="input-group">
+            <input type="text" id="login-username" placeholder="အသုံးပြုသူအမည်" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="login-password" placeholder="လျှို့ဝှက်နံပါတ်" required>
+        </div>
+        <button onclick="handleLogin()">ဝင်ရောက်ရန်</button>
+        <p id="login-message" class="message"></p>
+        <p class="switch-link">
+            အကောင့် မရှိသေးဘူးလား? <a href="#" onclick="showPage('register-page')">မှတ်ပုံတင်ရန်</a>
+        </p>
+    </div>
+
+    <div id="register-page" class="auth-container" style="display:none;">
+        <h2>အသုံးပြုသူ မှတ်ပုံတင်ခြင်း (Register)</h2>
+        <p class="note">မှတ်ချက်: Username သာ ထည့်ပါ၊ Email မလိုပါ။</p>
+        <div class="input-group">
+            <input type="text" id="register-username" placeholder="အသုံးပြုသူအမည်" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="register-password" placeholder="လျှို့ဝှက်နံပါတ် (၆ လုံးနှင့်အထက်)" required>
+        </div>
+        <button onclick="handleRegister()">မှတ်ပုံတင်ရန်</button>
+        <p id="register-message" class="message"></p>
+        <p class="switch-link">
+            အကောင့် ရှိပြီးသားလား? <a href="#" onclick="showPage('login-page')">ဝင်ရောက်ရန်</a>
+        </p>
+    </div>
+
+    <div id="home-page" style="display:none;">
+        <header>
+            <div class="logo">Video Stream</div>
+            <div class="user-info">
+                <span id="username-display"></span>
+                <a href="#" onclick="showPage('profile-page')">ပရိုဖိုင်</a>
+                <button onclick="handleLogout()">ထွက်ရန်</button>
+            </div>
+        </header>
+
+        <main class="video-layout">
+            <div class="player-area">
+                <video id="my-video" class="video-js vjs-big-play-centered" controls preload="auto" width="640" height="360" data-setup='{}'>
+                    <p class="vjs-no-js">To view this video please enable JavaScript...</p>
+                </video>
+                <div class="video-controls">
+                    <h3 id="current-video-title"></h3>
+                    <div class="action-buttons">
+                        <button id="like-button" onclick="toggleLike()">👍 လိုက်ခ် (<span id="like-count">0</span>)</button>
+                        <a id="download-link" href="#" download><button>⬇️ ဒေါင်းလုဒ်</button></a>
+                    </div>
+                </div>
+                <div class="comments-section">
+                    <h4>မှတ်ချက်များ (<span id="comment-count">0</span>)</h4>
+                    <div id="comments-list"></div>
+                    <div class="comment-input-group">
+                        <input type="text" id="comment-input" placeholder="မှတ်ချက်ရေးပါ...">
+                        <button onclick="addComment()">ပို့ရန်</button>
+                    </div>
+                </div>
+            </div>
+            <div id="video-sidebar" class="sidebar">
+                <h4>ဗီဒီယို စာရင်း</h4>
+            </div>
+        </main>
+    </div>
+
+    <div id="profile-page" class="auth-container" style="display:none;">
+        <h2>အသုံးပြုသူ ပရိုဖိုင်</h2>
+        <p><strong>အသုံးပြုသူအမည်:</strong> <span id="profile-username">N/A</span></p>
+        <p><strong>မှတ်ပုံတင်သည့်ရက်စွဲ:</strong> <span id="profile-registered-date">N/A</span></p>
+        <p><strong>နောက်ဆုံး ဝင်ရောက်သည့်ရက်စွဲ:</strong> <span id="profile-last-login">N/A</span></p>
+        <button onclick="showPage('home-page')">နောက်သို့</button>
+    </div>
+    
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+
+    <script type="module">
+        // 1. SDKs များကို တကြိမ်သာ Import လုပ်ခြင်း
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        // 🚨 sendEmailVerification, updateProfile တို့ကို ဖြုတ်ထားသည်
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+
+        // 2. Firebase Configuration (ခင်ဗျားရဲ့ Project ID ကို သုံးထားသည်)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBHFEAoD5nMUg7azmeeAFdy4Btlff5qiXQ",
+            authDomain: "my-webi-dc06d.firebaseapp.com",
+            projectId: "my-webi-dc06d",
+            storageBucket: "my-webi-dc06d.firebasestorage.app",
+            messagingSenderId: "939042419939",
+            appId: "1:939042419939:web:49e96f18117a68bb8b01d6",
+            measurementId: "G-DJ9046C036"
+        };
+
+        // 3. Firebase ကို Initialize လုပ်ခြင်း
+        const app = initializeApp(firebaseConfig);
+        
+        // 4. Auth Object ကို ရယူပြီး Functions များကို window object တွင် ချိတ်ဆက်ခြင်း
+        const auth = getAuth(app); 
+        window.auth = auth; 
+        
+        // videos.js က ခေါ်သုံးမည့် Functions
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+        // Verification function များကို မချိတ်တော့ပါ
+
+        const analytics = getAnalytics(app);
+
+    </script>
+
+    <script src="videos.js"></script>
+</body>
+</html>
