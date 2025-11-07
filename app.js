@@ -103,24 +103,28 @@ window.handleLogout = async () => {
 };
 
 // Auth State Check 
-window.auth.onAuthStateChanged((user) => {
-    if (user) {
-        const displayUsername = user.email.includes('@dummy.com') ? user.email.replace('@dummy.com', '') : user.email.split('@')[0];
+// Auth State Check ကို ပြင်ဆင်ခြင်း
+let isInitialCheckDone = false; // အစစ်ဆေးပြီးပြီလား စစ်ရန်
 
+window.auth.onAuthStateChanged((user) => {
+    // 🚨 loading page ကို ပိတ်ခြင်း
+    document.getElementById('loading-page').style.display = 'none';
+
+    if (user) {
+        // ... (user data load လုပ်ခြင်း code အဟောင်းကို ဆက်ထားပါ) ...
+        const displayUsername = user.email.includes('@dummy.com') ? user.email.replace('@dummy.com', '') : user.email.split('@')[0];
         document.getElementById('username-display').textContent = displayUsername; 
         document.getElementById('profile-username').textContent = displayUsername; 
+        // ... (date code များကို ဆက်ထားပါ) ...
         
-        const creationDate = user.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleString() : 'N/A';
-        const lastLogin = user.metadata.lastSignInTime ? new Date(user.metadata.lastSignInTime).toLocaleString() : 'N/A';
-        document.getElementById('profile-registered-date').textContent = creationDate;
-        document.getElementById('profile-last-login').textContent = lastLogin;
-        
-        if (document.getElementById('home-page').style.display === 'none') {
-            showPage('home-page'); 
-        }
+        // 💡 User ဝင်ပြီးသားဆိုရင် Home Page ကို တိုက်ရိုက်ပြပါ
+        showPage('home-page');
     } else {
+        // 💡 User မဝင်ထားရင် Login Page ကို တိုက်ရိုက်ပြပါ
         showPage('login-page');
     }
+    
+    // (ယခင်က ပါခဲ့သော isInitialCheckDone Logic သည် ယခုလိုအပ်မည်မဟုတ်တော့ပါ)
 });
 
 
