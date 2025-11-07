@@ -177,12 +177,34 @@ let player;
 
 function loadDataFromStorage() {
     const storedData = localStorage.getItem('videoData');
+    
+    // 💡 ယာယီ ရှင်းလင်းရေး Logic
+    // ဒီနေရာမှာ သင့်ရဲ့ code အသစ်ထဲက video အရေအတွက် (ဥပမာ: 2 ခု) နဲ့ မကိုက်ညီရင် 
+    // data အဟောင်းကို ရှင်းထုတ်ပြီး data အသစ်ကို ဖြည့်သွင်းပါ
     if (storedData) {
-        videos = JSON.parse(storedData); 
+        let tempVideos = JSON.parse(storedData);
+        
+        // 🚨 သင့်ရဲ့ လက်ရှိ code ထဲက videos array မှာ item 2 ခု ရှိပါတယ်။
+        // storedData ထဲမှာ video 2 ခု မရှိရင် (အဟောင်းဖြစ်နေရင်) ရှင်းထုတ်ခိုင်းတာပါ။
+        if (tempVideos.length < videos.length || tempVideos[0].title !== videos[0].title) {
+             console.log("Local Storage data သည် Code အသစ်နှင့် မကိုက်ညီပါ၊ ရှင်းလင်းပါမည်။");
+             localStorage.removeItem('videoData');
+             videos.forEach((v, i) => v.id = i + 1); // Code အသစ်မှ data ကို ပြန်ထည့်
+             saveDataToStorage();
+             return; // ရှင်းပြီးရင် ဆက်မလုပ်တော့ပါ
+        }
+        
+        // data အဟောင်းက မှန်ကန်တယ်ဆိုရင် အဟောင်းကို ပြန်သုံးပါ
+        videos = tempVideos;
+
     } else {
+        // storedData မရှိမှသာ ID ကို သတ်မှတ်ပါ
         videos.forEach((v, i) => v.id = i + 1);
+        // data အသစ်ကို တစ်ခါတည်း save လုပ်ထားပါ
+        saveDataToStorage(); 
     }
 }
+
 
 function saveDataToStorage() {
     localStorage.setItem('videoData', JSON.stringify(videos));
