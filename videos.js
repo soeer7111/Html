@@ -206,7 +206,68 @@ let videos = [
 ];
 
 let currentVideoIndex = 0; 
-let player; 
+let player;
+
+// =================================================
+// 👤 Profile Photo Upload & Persistence (Card မလိုသော Local Storage)
+// =================================================
+
+const profilePhotoInput = document.getElementById('profilePhotoInput');
+const profilePhoto = document.getElementById('profilePhoto'); // HTML ထဲက img tag
+const commentProfilePhotos = document.querySelectorAll('.comment-profile-photo');
+
+// 1. Local Storage မှ ပုံကို Load လုပ်ခြင်း
+function loadProfilePhoto() {
+    const savedPhoto = localStorage.getItem('userProfilePhoto');
+    if (savedPhoto) {
+        // Player နေရာက Profile Photo
+        profilePhoto.src = savedPhoto;
+        
+        // Comment များက Profile Photo အားလုံး
+        commentProfilePhotos.forEach(img => {
+            img.src = savedPhoto;
+        });
+    }
+}
+
+// 2. Photo Upload လုပ်ပြီး Base64 အဖြစ်သိမ်းခြင်း
+profilePhotoInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            // Base64 String ကို Local Storage တွင်သိမ်းဆည်းသည်။
+            const base64Image = reader.result;
+            localStorage.setItem('userProfilePhoto', base64Image);
+
+            // ချက်ချင်း ပြသသည်။
+            profilePhoto.src = base64Image;
+            commentProfilePhotos.forEach(img => {
+                img.src = base64Image;
+            });
+
+            alert('Profile Photo အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။');
+        };
+
+        // File ကို Base64 String အဖြစ် ဖတ်သည်။
+        reader.readAsDataURL(file);
+    } else {
+        alert('ကျေးဇူးပြု၍ ဓာတ်ပုံဖိုင်ကိုသာ ရွေးချယ်ပါ။');
+    }
+});
+
+// 3. Page စတင်တက်လာချိန်တွင် Load လုပ်ရန်
+document.addEventListener('DOMContentLoaded', loadProfilePhoto);
+
+// =================================================
+// 💡 အရေးကြီး: HTML (index.html) ပြင်ရန် 
+// =================================================
+// 🚨 Comment နေရာများတွင် Profile Photo ကို ပြသရန်၊ comment data တွင် ပါသော 
+// 🚨 'default-profile.png' ကို သင့်ရဲ့ Profile Photo (id='profilePhoto') နဲ့ တူအောင် 
+// 🚨 သေချာချိတ်ဆက်ထားပါ။ (CSS ဖြင့် နေရာချထားခြင်းကို စစ်ဆေးပါ)
+
+
 // ... (ကျန်တဲ့ videos.js Code များ အကုန်လုံး အတူတူပါပဲ)
 
 // Local Storage မှ Data များကို Load လုပ်ခြင်း
