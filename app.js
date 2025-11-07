@@ -1,4 +1,4 @@
-အသစ်'်'=================================================
+Logic=============================================
 // 🚨 Part 1: Firebase Configuration & Setup
 // =================================================
 
@@ -158,23 +158,40 @@ window.updateProfileDetails = async () => {
 
 // 📄 app.js (Part 5: Video Player & Data Persistence Logic)
 
+// =================================================
+// 🚨 Part 5: Video Player & Data Persistence Logic (Like/Comment)
+// =================================================
+
 let videos = [
     { 
         id: 1, 
-        // 🚨 MediaFire ကနေ ရလာတဲ့ Direct Link ကို အစားထိုးလိုက်ပါပြီ
+        // 🚨 သင်ပေးထားသော MediaFire Direct Link အသစ်ကို အသုံးပြုထားပါသည်။
         url: 'https://download2285.mediafire.com/e6w0xns4olkgqf58wWvPLniykI0hY48zWD3PFlqPl_ZJ0419p96tay2TFwvGobbKaHrw5gAPL2Eh-yYb7tuAO6vio6nPlTemPrg3OtHeHeUY-6goBDQrJFKIpmYs5irC92fefYCLbbRvu3ROYq9Qe2oEmrMDtyhSn1BPmy43NM0/ep6gqdvvjkpdaos/5_6208271644641729117.mp4', 
         
-        tit'ထိုင်းမလေးလီးတုနဲ့လိုးပြနေသည်', 
+        title: 'Second Testing Stream (MediaFire)', 
         
-        // Download Link ကိုလည်း Direct Link သာ ထားပါ
         download: 'https://download2285.mediafire.com/e6w0xns4olkgqf58wWvPLniykI0hY48zWD3PFlqPl_ZJ0419p96tay2TFwvGobbKaHrw5gAPL2Eh-yYb7tuAO6vio6nPlTemPrg3OtHeHeUY-6goBDQrJFKIpmYs5irC92fefYCLbbRvu3ROYq9Qe2oEmrMDtyhSn1BPmy43NM0/ep6gqdvvjkpdaos/5_6208271644641729117.mp4', 
         
-        currentLikes: , 
+        currentLikes: 8, 
         userLiked: false, 
         currentComments: []
     },
-    // ... အခြားသော ဗီဒီယိုများ ...
+    { 
+        id: 2, 
+        // 🚨 Video 2 အတွက်ကိုလည်း MediaFire Link အတူတူ သုံးထားလိုက်ပါမည်။
+        // (တကယ်တမ်းမှာတော့ Link မတူရပါဘူး။ စမ်းသပ်ရန်သာ ဖြစ်သည်)
+        url: 'https://download2285.mediafire.com/e6w0xns4olkgqf58wWvPLniykI0hY48zWD3PFlqPl_ZJ0419p96tay2TFwvGobbKaHrw5gAPL2Eh-yYb7tuAO6vio6nPlTemPrg3OtHeHeUY-6goBDQrJFKIpmYs5irC92fefYCLbbRvu3ROYq9Qe2oEmrMDtyhSn1BPmy43NM0/ep6gqdvvjkpdaos/5_6208271644641729117.mp4', 
+        
+        title: 'Thai Schoolgirl showing off her fake tits (TEST)', 
+        
+        download: 'https://download2285.mediafire.com/e6w0xns4olkgqf58wWvPLniykI0hY48zWD3PFlqPl_ZJ0419p96tay2TFwvGobbKaHrw5gAPL2Eh-yYb7tuAO6vio6nPlTemPrg3OtHeHeUY-6goBDQrJFKIpmYs5irC92fefYCLbbRvu3ROYq9Qe2oEmrMDtyhSn1BPmy43NM0/ep6gqdvvjkpdaos/5_6208271644641729117.mp4',
+        
+        currentLikes: 15, 
+        userLiked: false, 
+        currentComments: []
+    }
 ];
+// ... ကျန်တဲ့ code များ
 
 let currentVideoIndex = 0; 
 let player; 
