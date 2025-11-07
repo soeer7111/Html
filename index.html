@@ -140,12 +140,28 @@
     <p><strong>နောက်ဆုံး ဝင်ရောက်သည့်ရက်စွဲ:</strong> <span id="profile-last-login">N/A</span></p>
     
     <hr>
-    <h4>ပရိုဖိုင် ဓါတ်ပုံ</h4>
-    <img id="profile-photo-display" src="https://via.placeholder.com/100?text=Profile" style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px;">
-    <input type="file" id="profile-photo-input" accept="image/*">
-    <button onclick="uploadProfilePhoto()">ဓါတ်ပုံ တင်ရန်</button>
+    <h4>ပရိုဖိုင် ဓာတ်ပုံ</h4>
+<hr>
+
+<div class="profile-photo-area flex items-center space-x-4">
+    <img id="profilePhoto" 
+         src="default-profile.png" 
+         alt="Profile Photo" 
+         class="w-20 h-20 rounded-full border-2 border-indigo-500 cursor-pointer"
+         onclick="document.getElementById('profilePhotoInput').click()"> 
     
-    <hr>
+    <input type="file" 
+           id="profilePhotoInput" 
+           accept="image/*" 
+           class="hidden">
+
+    <button onclick="document.getElementById('profilePhotoInput').click()" 
+            class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">
+        ပုံရွေးရန်/ပြောင်းရန်
+    </button>
+</div>
+
+<hr>
     <h4>ကိုယ်ရေး အချက်အလက်</h4>
     <div class="input-group">
         <input type="tel" id="profile-phone" placeholder="ဖုန်းနံပါတ် (ဥပမာ: +959xxxxxxxxx)" required>
