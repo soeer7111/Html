@@ -171,27 +171,32 @@ window.handleLogout = async () => { /* ... code remains the same ... */
 
 
 // =================================================
-// 🎥 Video Player & Data Persistence Logic (Comment/Like Delete Fix)
+// videos.js ထဲက 🚨 Initial Video Data အပိုင်းကို အစားထိုးရန်
+
+// =================================================
+// 🎥 Video Player & Data Persistence Logic
 // =================================================
 
 // 🚨 Initial Video Data (Working Links Only)
 let videos = [
     { 
         id: 1, 
+        // 🚨 Working URL
         url: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-720p.mp4', 
         title: 'ဒုတိယမြောက် စမ်းသပ်ဗီဒီယို (Testing Stream)', 
         download: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-720p.mp4', 
         currentLikes: 8, 
         userLiked: false, 
         currentComments: [
-            { user: 'User99', text: 'အရည်အသွေး ကောင်းတယ်', timestamp: '2025-11-06 12:30', id: Date.now() + 1 } // Comment ID
+            { user: 'User99', text: 'အရည်အသွေး ကောင်းတယ်', timestamp: '2025-11-06 12:30', id: Date.now() + 1 } 
         ]
     },
     { 
         id: 2,
-        url: 'https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4', 
-        title: 'Big Buck Bunny (Sample Video)', 
-        download: 'https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4', 
+        // 🚨 သုံးစွဲသူပေးထားသော Link ကို raw=1 ဖြင့် ပြန်လည်ပြင်ဆင်ထားသည်။
+        url: 'https://www.dropbox.com/scl/fi/bfhlnun9lvqlgjuayiq56/5_6208271644641729117.mp4?rlkey=q721b4h9v5abvjme2cdc1h6u1&raw=1', 
+        title: 'ထိုင်း‌ ကျောင်းသူမလေး လီးတုနဲ့လိုးပြနေသည် (Dropbox Fix)', 
+        download: 'https://www.dropbox.com/scl/fi/bfhlnun9lvqlgjuayiq56/5_6208271644641729117.mp4?rlkey=q721b4h9v5abvjme2cdc1h6u1&raw=1', 
         currentLikes: 15, 
         userLiked: false, 
         currentComments: [
@@ -202,6 +207,7 @@ let videos = [
 
 let currentVideoIndex = 0; 
 let player; 
+// ... (ကျန်တဲ့ videos.js Code များ အကုန်လုံး အတူတူပါပဲ)
 
 // Local Storage မှ Data များကို Load လုပ်ခြင်း
 function loadDataFromStorage() {
