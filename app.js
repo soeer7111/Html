@@ -1,4 +1,4 @@
-// =================================================
+အသစ်'်'=================================================
 // 🚨 Part 1: Firebase Configuration & Setup
 // =================================================
 
@@ -160,12 +160,12 @@ let videos = [
         // 🚨 MediaFire ကနေ ရလာတဲ့ Direct Link ကို အစားထိုးလိုက်ပါပြီ
         url: 'https://download2285.mediafire.com/e6w0xns4olkgqf58wWvPLniykI0hY48zWD3PFlqPl_ZJ0419p96tay2TFwvGobbKaHrw5gAPL2Eh-yYb7tuAO6vio6nPlTemPrg3OtHeHeUY-6goBDQrJFKIpmYs5irC92fefYCLbbRvu3ROYq9Qe2oEmrMDtyhSn1BPmy43NM0/ep6gqdvvjkpdaos/5_6208271644641729117.mp4', 
         
-        title: 'ကျွန်တော်တို့ရဲ့ ဗီဒီယို အသစ်', 
+        tit'ထိုင်းမလေးလီးတုနဲ့လိုးပြနေသည်', 
         
         // Download Link ကိုလည်း Direct Link သာ ထားပါ
         download: 'https://download2285.mediafire.com/e6w0xns4olkgqf58wWvPLniykI0hY48zWD3PFlqPl_ZJ0419p96tay2TFwvGobbKaHrw5gAPL2Eh-yYb7tuAO6vio6nPlTemPrg3OtHeHeUY-6goBDQrJFKIpmYs5irC92fefYCLbbRvu3ROYq9Qe2oEmrMDtyhSn1BPmy43NM0/ep6gqdvvjkpdaos/5_6208271644641729117.mp4', 
         
-        currentLikes: 8, 
+        currentLikes: , 
         userLiked: false, 
         currentComments: []
     },
@@ -341,13 +341,21 @@ function renderSidebar() {
     const sidebar = document.getElementById('video-sidebar');
     if (!sidebar) return;
     
-    sidebar.innerHTML = '<h4>ဗီဒီယို စာရင်း</h4>';
+    sidebar.innerHTML = '<h4>နောက်ထပ်videoများ</h4>';
     videos.forEach((video, index) => {
         const item = document.createElement('div');
         item.className = 'sidebar-item';
         item.textContent = `${index + 1}. ${video.title}`;
-        item.onclick = () => loadVideo(video, index);
+        
+        item.onclick = () => {
+            // 🚨 Console မှာ စစ်ဆေးရန်အတွက် Log ထည့်သွင်းခြင်း
+            console.log(`Loading Video: ${video.title} at index ${index}`);
+            
+            // loadVideo function ကို ခေါ်ဆိုခြင်း
+            loadVideo(video, index);
+        };
+        
         sidebar.appendChild(item);
     });
     updateSidebarHighlight();
-      }
+}
