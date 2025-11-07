@@ -152,29 +152,24 @@ window.updateProfileDetails = async () => {
 // 🚨 Part 5: Video Player & Data Persistence Logic (Like/Comment)
 // =================================================
 
+// 📄 app.js (Part 5: Video Player & Data Persistence Logic)
+
 let videos = [
     { 
         id: 1, 
-        url: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-720p.mp4', 
-        title: 'ဒုတိယမြောက် စမ်းသပ်ဗီဒီယို (Testing Stream)', 
-        download: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-720p.mp4', 
+        // 🚨 MediaFire ကနေ ရလာတဲ့ Direct Link ကို အစားထိုးလိုက်ပါပြီ
+        url: 'https://download2285.mediafire.com/e6w0xns4olkgqf58wWvPLniykI0hY48zWD3PFlqPl_ZJ0419p96tay2TFwvGobbKaHrw5gAPL2Eh-yYb7tuAO6vio6nPlTemPrg3OtHeHeUY-6goBDQrJFKIpmYs5irC92fefYCLbbRvu3ROYq9Qe2oEmrMDtyhSn1BPmy43NM0/ep6gqdvvjkpdaos/5_6208271644641729117.mp4', 
+        
+        title: 'ကျွန်တော်တို့ရဲ့ ဗီဒီယို အသစ်', 
+        
+        // Download Link ကိုလည်း Direct Link သာ ထားပါ
+        download: 'https://download2285.mediafire.com/e6w0xns4olkgqf58wWvPLniykI0hY48zWD3PFlqPl_ZJ0419p96tay2TFwvGobbKaHrw5gAPL2Eh-yYb7tuAO6vio6nPlTemPrg3OtHeHeUY-6goBDQrJFKIpmYs5irC92fefYCLbbRvu3ROYq9Qe2oEmrMDtyhSn1BPmy43NM0/ep6gqdvvjkpdaos/5_6208271644641729117.mp4', 
+        
         currentLikes: 8, 
         userLiked: false, 
-        currentComments: [
-            { user: 'User99', text: 'အရည်အသွေး ကောင်းတယ်', timestamp: '12:30 PM', id: Date.now() + 1 } 
-        ]
+        currentComments: []
     },
-    { 
-        id: 2,
-        url: 'https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4', 
-        title: 'Big Buck Bunny (Sample Video)', 
-        download: 'https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4', 
-        currentLikes: 15, 
-        userLiked: false, 
-        currentComments: [
-            { user: 'Admin', text: 'ကောင်းလိုက်တာ!', timestamp: '10:00 AM', id: Date.now() + 2 }
-        ]
-    },
+    // ... အခြားသော ဗီဒီယိုများ ...
 ];
 
 let currentVideoIndex = 0; 
