@@ -12,29 +12,9 @@ const firebaseConfig = {
     appId: "1:939042419939:web:49e96f18117a68bb8b01d6",
     measurementId: "G-DJ9046C036"
 };
-// 🚨 Part 1: Firebase Configuration & Setup အောက်မှာ
-// ...window.app = firebase.initializeApp(firebaseConfig);
-window.auth = firebase.auth();
-// ✅ Firestore Initialization ကို ထည့်သွင်းလိုက်ပါ
-window.db = firebase.firestore();
-// 🚨 Part 2: Page Navigation & UI Functions အောက်မှာ
-function showPage(pageId) {
-    // ... (ရှိပြီးသား code များ)
-    if (pageId === 'home-page') {
-        initializeVideoPlayer(); 
-    } else if (pageId === 'profile-page') {
-        loadProfileData(); 
-    } 
-    // ✅ Admin Page ကို ခေါ်တဲ့အခါ Admin ဟုတ်မဟုတ် စစ်ဆေးဖို့
-    else if (pageId === 'admin-page') { 
-        checkAdminStatus(); 
-    }
-}
-window.showPage = showPage;
-
-
 window.app = firebase.initializeApp(firebaseConfig);
 window.auth = firebase.auth();
+window.db = firebase.firestore();
 
 // =================================================
 // 🚨 Part 2: Page Navigation & UI Functions
