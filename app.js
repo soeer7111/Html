@@ -12,6 +12,26 @@ const firebaseConfig = {
     appId: "1:939042419939:web:49e96f18117a68bb8b01d6",
     measurementId: "G-DJ9046C036"
 };
+// 🚨 Part 1: Firebase Configuration & Setup အောက်မှာ
+// ...window.app = firebase.initializeApp(firebaseConfig);
+window.auth = firebase.auth();
+// ✅ Firestore Initialization ကို ထည့်သွင်းလိုက်ပါ
+window.db = firebase.firestore();
+// 🚨 Part 2: Page Navigation & UI Functions အောက်မှာ
+function showPage(pageId) {
+    // ... (ရှိပြီးသား code များ)
+    if (pageId === 'home-page') {
+        initializeVideoPlayer(); 
+    } else if (pageId === 'profile-page') {
+        loadProfileData(); 
+    } 
+    // ✅ Admin Page ကို ခေါ်တဲ့အခါ Admin ဟုတ်မဟုတ် စစ်ဆေးဖို့
+    else if (pageId === 'admin-page') { 
+        checkAdminStatus(); 
+    }
+}
+window.showPage = showPage;
+
 
 window.app = firebase.initializeApp(firebaseConfig);
 window.auth = firebase.auth();
@@ -367,6 +387,23 @@ function renderSidebar() {
     });
     updateSidebarHighlight();
 }
+// =================================================
+// 🚨 Part 7: Admin Panel Logic (New)
+// =================================================
+
+// ⚠️ Admin Email ကို သတ်မှတ်ခြင်း (သင့်ရဲ့ Admin Username ကို @dummy.com ထည့်ပြီး ဖြည့်ပါ)
+const ADMIN_EMAIL = 'soeer71@dummy.com'; // ဥပမာ- 'soeer71' ဆိုရင် ဒီလိုရေးပါ
+
+function checkAdminStatus() {
+    // ... (ကျန်တဲ့ checkAdminStatus functions များ) ...
+}
+window.checkAdminStatus = checkAdminStatus;
+
+window.loadUserList = async () => {
+    // ... (ကျန်တဲ့ loadUserList functions များ) ...
+};
+
+// ... (saveUserDataToFirestore, handleLogin, handleRegister functions များကိုလည်း ထည့်သွင်းပါ) ...
 
 // ⚠️ သတိပြုရန်: updateSidebarHighlight() သည် renderSidebar() အောက်တွင် မပြောင်းမလဲ ရှိနေရပါမည်။
 // ၎င်းအပေါ်မှ Code များကိုသာ အစားထိုးပါ။
