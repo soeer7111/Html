@@ -83,10 +83,15 @@ window.handleLogout = async () => {
 
 // ... (handleLogin, handleRegister, handleLogout functions များရှိရပါမည်)
 
-// ✅ ဤ Firebase Auth State Check Logic အဟောင်းကို ဖျက်ပြီး အောက်က Code ကို အစားထိုးပါ
-// (Auth State Check Logic ကို အစားထိုးပါ)
+// =================================================
+// 🚨 Part 3: Authentication (Login/Register/Logout) အောက်မှာ
+// =================================================
+
+// ... (handleLogin, handleRegister, handleLogout functions များရှိရပါမည်)
+
+// ✅ ဤသည်မှာ Auth State Check Logic အဟောင်းကို အစားထိုးရမည့် Code ဖြစ်သည်
 window.auth.onAuthStateChanged((user) => {
-    // 1. Loading Page ကို ဖျောက်ပါ
+    // 1. Loading Page (သို့မဟုတ်) Initial UI များကို ဖျောက်ပါ
     document.getElementById('loading-page').style.display = 'none';
 
     if (user) {
@@ -95,8 +100,17 @@ window.auth.onAuthStateChanged((user) => {
         document.getElementById('nav-bar').style.display = 'flex'; 
         
         // 3. Home Page ကို တိုက်ရိုက် ပြသပါ
-        // (Note: showPage('home-page') ကို ခေါ်သောအခါ initializeVideoPlayer ကိုလည်း ခေါ်ပါသည်)
         showPage('home-page'); 
+
+    } else {
+        // User Login မဝင်ထားရင်
+        // 2. Navigation Bar ကို ဝှက်ပါ
+        document.getElementById('nav-bar').style.display = 'none';
+        
+        // 3. Login Page ကို ပြပါ
+        showPage('login-page');
+    }
+});
 
         // 4. Admin Account ဖြစ်မဖြစ် စစ်ဆေးပြီး Profile မှာ Admin Button ပြသရန်
         const adminButton = document.getElementById('admin-nav-button');
