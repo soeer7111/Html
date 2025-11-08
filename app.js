@@ -165,7 +165,7 @@ let videos = [
         title: 'ထိုင်းကျောင်းသူမလေးလီးတုနဲ့လိုးပြနေသည်', 
         
         // ✅ Download အတွက်ကိုလည်း Direct Link ကိုသာ ထည့်ထားပါသည်
-        download: 'https://drive.google.com/uc?export=download&id=1fwo_Dd-UmzvL7ZQk5MLymamXTTSvSqBg', 
+        download: 'https://www.dropbox.com/scl/fi/bfhlnun9lvqlgjuayiq56/5_6208271644641729117.mp4?rlkey=q721b4h9v5abvjme2cdc1h6u1&st=u8dfzund&dl=1', 
         
         currentLikes: 8, 
         userLiked: false, 
@@ -174,10 +174,10 @@ let videos = [
     { 
         id: 2, 
         // ⚠️ Video 2 အတွက်ကိုလည်း လောလောဆယ် Link အတူတူ သုံးထားလိုက်ပါမည်။
-        url: 'https://drive.google.com/uc?export=download&id=1fwo_Dd-UmzvL7ZQk5MLymamXTTSvSqBg',
+        url: 'https://www.dropbox.com/scl/fi/3pvicl6ck8oiyimuf3izh/5_6208271644641729120.mp4?rlkey=knc74hnso7d6076icwqda4w6a&st=0dpqj5da&dl=1',
         title: 'Thai Schoolgirl showing off her fake tits (TEST) - GD', 
         
-        download: 'https://drive.google.com/uc?export=download&id=1fwo_Dd-UmzvL7ZQk5MLymamXTTSvSqBg',
+        download: 'https://www.dropbox.com/scl/fi/3pvicl6ck8oiyimuf3izh/5_6208271644641729120.mp4?rlkey=knc74hnso7d6076icwqda4w6a&st=0dpqj5da&dl=1',
         
         currentLikes: 15, 
         userLiked: false, 
