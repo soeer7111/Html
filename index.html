@@ -6,6 +6,69 @@
     <title>Social Video App (Working Demo)</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
+        /* ================================================= */
+/* 🚨 1. App Content တစ်ခုလုံးကို ဗဟိုပြုပြီး Width သတ်မှတ်ခြင်း */
+/* ================================================= */
+.page { 
+    padding: 20px; 
+    background-color: white; 
+    border-radius: 8px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+    
+    /* 💡 ဤနေရာတွင် စခရင်၏ 3 ပုံ 1 ပုံကို ယူသည် (ဥပမာ: 400px ခန့်) */
+    max-width: 400px; 
+    width: 90%; 
+    /* ဗဟို (Center) သို့ ရောက်ရှိစေရန် */
+    margin: 20px auto; 
+}
+
+/* 2. Video နှင့် Sidebar Container (Flexbox) - အားလုံးကို ဒေါင်လိုက်စီသည် */
+.video-container-wrapper { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    align-items: center; /* Item အားလုံးကို ဗဟိုပြုသည် */
+    width: 100%;
+}
+
+.main-video-content { 
+    /* Video Player, Buttons, Comments တို့ ပါဝင်သော အပိုင်း */
+    min-width: 100%; 
+    width: 100%;
+}
+
+/* ================================================= */
+/* 🚨 3. ဝိုင်းပြထားသော Video စာရင်း (Sidebar) ကိုသာ ထိန်းချုပ်ခြင်း */
+/* ================================================= */
+.sidebar { 
+    width: 100%; 
+    background-color: #f9f9f9; 
+    padding: 15px; 
+    border-radius: 4px; 
+    box-sizing: border-box; 
+    /* 💡 Video စာရင်းကို App Content အလယ်မှာ ထားပြီးသား ဖြစ်သည် */
+}
+
+/* 4. Button များကို ပုံမှန်အတိုင်း ထားခြင်း (Center မလုပ်တော့ပါ) */
+/* Like/Download Button များကို အစွန်းတွင် ထားရန် */
+.video-info-actions {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    /* text-align: center; ကို ဖယ်ထုတ်လိုက်ပါ */
+    width: 100%;
+}
+
+/* Button Group ကိုလည်း Center မလုပ်တော့ပါ */
+.action-buttons-group {
+    display: flex;
+    /* justify-content: center; ကို ဖယ်ထုတ်လိုက်ပါ */
+    width: 100%;
+    margin-top: 10px;
+}
+
+
+/* ... ကျန်သော စတိုင်များ (Marquee Animation စသည့်) ... */
+        
         /* Sidebar Item အတွက် Marquee Effect CSS */
 .marq-item {
     overflow: hidden; /* ရွှေ့လျားနေတဲ့ စာသား ဘောင်ကျော်တာကို ဖျောက်ထားသည် */
