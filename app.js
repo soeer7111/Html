@@ -161,8 +161,8 @@ let videos = [
     { 
         id: 1, 
         // ✅ Google Drive Direct Stream URL အသစ်
-        url: 'https://drive.google.com/uc?export=download&id=1fwo_Dd-UmzvL7ZQk5MLymamXTTSvSqBg',
-        title: 'new video', 
+        url: 'https://www.dropbox.com/scl/fi/bfhlnun9lvqlgjuayiq56/5_6208271644641729117.mp4?rlkey=q721b4h9v5abvjme2cdc1h6u1&st=u8dfzund&dl=1',
+        title: 'ထိုင်းကျောင်းသူမလေးလီးတုနဲ့လိုးပြနေသည်', 
         
         // ✅ Download အတွက်ကိုလည်း Direct Link ကိုသာ ထည့်ထားပါသည်
         download: 'https://drive.google.com/uc?export=download&id=1fwo_Dd-UmzvL7ZQk5MLymamXTTSvSqBg', 
