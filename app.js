@@ -149,9 +149,6 @@ window.updateProfileDetails = async () => {
 
 
 // =================================================
-// 🚨 Part 5: Video Player & Data Persistence Logic (Like/Comment)
-// =================================================
-
 // =================================================
 // 🚨 Part 5: Video Player & Data Persistence Logic (Like/Comment)
 // =================================================
@@ -159,10 +156,11 @@ window.updateProfileDetails = async () => {
 let videos = [
     { 
         id: 1, 
-        // 🚨 သင်ပေးထားသော MediaFire Direct Link အသစ်ကို အသုံးပြုထားပါသည်။
+        // ✅ Pcloud လင့်ခ်အသစ်ကို 'url' မှာ ထည့်သွင်းလိုက်ပါပြီ
         url: 'https://u.pcloud.link/publink/show?code=XZMgYM5Zn4G1madJ1c5RF0rUj0RA08t6fTG7',
-        title: 'ထိုင်း‌‌ေကျာင်းသူ‌ေလးလီးတုနဲ့လုိးပြ‌ေနသသည်', 
+        title: 'ထိုင်း‌ ကျောင်းသူမလေးရဲ့', 
         
+        // ✅ Pcloud လင့်ခ်အသစ်ကို 'download' မှာ ထည့်သွင်းလိုက်ပါပြီ
         download: 'https://u.pcloud.link/publink/show?code=XZMgYM5Zn4G1madJ1c5RF0rUj0RA08t6fTG7', 
         
         currentLikes: 8, 
@@ -171,12 +169,13 @@ let videos = [
     },
     { 
         id: 2, 
-        // 🚨 Video 2 အတွက်ကိုလည်း MediaFire Link အတူတူ သုံးထားလိုက်ပါမည်။
-        // (တကယ်တမ်းမှာတော့ Link မတူရပါဘူး။ စမ်းသပ်ရန်သာ ဖြစ်သည်)
-        url: 'https://download2292.mediafire.com/h9o29dsiugrgifQpWXY_aa4k6dvlsZW4L_5g0RdDDSanVAVk35LkGwRPo-geoMMJjA-TN1f9nLJsyAg725eyemFpBBz6U-oOXun-dBEHk5DVypxfvN3aCBepTXyzTVx0rD8sbxB6Ntw0Fb6ISPCNNZRRlqGHYbA5UAVrCp7fWNI/ep6gqdvvjkpdaos/5_6208271644641729117.mp4',
+        // ⚠️ ဒီနေရာမှာတော့ ပထမဗီဒီယိုနဲ့ Link အတူတူ ထားလိုက်ပါတယ်။
+        // လိုအပ်ရင် ဒီလင့်ခ်ကိုလည်း နောက်ထပ် Pcloud လင့်ခ်တစ်ခုနဲ့ ပြောင်းနိုင်ပါတယ်။
+        url: 'https://u.pcloud.link/publink/show?code=XZMgYM5Zn4G1madJ1c5RF0rUj0RA08t6fTG7',
         title: 'Thai Schoolgirl showing off her fake tits (TEST)', 
         
-        download: 'https://download2285.mediafire.com/e6w0xns4olkgqf58wWvPLniykI0hY48zWD3PFlqPl_ZJ0419p96tay2TFwvGobbKaHrw5gAPL2Eh-yYb7tuAO6vio6nPlTemPrg3OtHeHeUY-6goBDQrJFKIpmYs5irC92fefYCLbbRvu3ROYq9Qe2oEmrMDtyhSn1BPmy43NM0/ep6gqdvvjkpdaos/5_6208271644641729117.mp4',
+        // ⚠️ ဒီနေရာမှာတော့ ပထမဗီဒီယိုနဲ့ Link အတူတူ ထားလိုက်ပါတယ်။
+        download: 'https://u.pcloud.link/publink/show?code=XZMgYM5Zn4G1madJ1c5RF0rUj0RA08t6fTG7',
         
         currentLikes: 15, 
         userLiked: false, 
