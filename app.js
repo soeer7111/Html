@@ -153,15 +153,19 @@ window.updateProfileDetails = async () => {
 // 🚨 Part 5: Video Player & Data Persistence Logic (Like/Comment)
 // =================================================
 
+// =================================================
+// 🚨 Part 5: Video Player & Data Persistence Logic (Like/Comment)
+// =================================================
+
 let videos = [
     { 
         id: 1, 
-        // ✅ Pcloud လင့်ခ်အသစ်ကို 'url' မှာ ထည့်သွင်းလိုက်ပါပြီ
-        url: 'https://u.pcloud.link/publink/show?code=XZMgYM5Zn4G1madJ1c5RF0rUj0RA08t6fTG7',
-        title: 'ထိုင်း‌ ကျောင်းသူမလေးရဲ့', 
+        // ✅ Google Drive Direct Stream URL အသစ်
+        url: 'https://drive.google.com/uc?export=download&id=1fwo_Dd-UmzvL7ZQk5MLymamXTTSvSqBg',
+        title: 'new video', 
         
-        // ✅ Pcloud လင့်ခ်အသစ်ကို 'download' မှာ ထည့်သွင်းလိုက်ပါပြီ
-        download: 'https://u.pcloud.link/publink/show?code=XZMgYM5Zn4G1madJ1c5RF0rUj0RA08t6fTG7', 
+        // ✅ Download အတွက်ကိုလည်း Direct Link ကိုသာ ထည့်ထားပါသည်
+        download: 'https://drive.google.com/uc?export=download&id=1fwo_Dd-UmzvL7ZQk5MLymamXTTSvSqBg', 
         
         currentLikes: 8, 
         userLiked: false, 
@@ -169,20 +173,17 @@ let videos = [
     },
     { 
         id: 2, 
-        // ⚠️ ဒီနေရာမှာတော့ ပထမဗီဒီယိုနဲ့ Link အတူတူ ထားလိုက်ပါတယ်။
-        // လိုအပ်ရင် ဒီလင့်ခ်ကိုလည်း နောက်ထပ် Pcloud လင့်ခ်တစ်ခုနဲ့ ပြောင်းနိုင်ပါတယ်။
-        url: 'https://u.pcloud.link/publink/show?code=XZMgYM5Zn4G1madJ1c5RF0rUj0RA08t6fTG7',
-        title: 'Thai Schoolgirl showing off her fake tits (TEST)', 
+        // ⚠️ Video 2 အတွက်ကိုလည်း လောလောဆယ် Link အတူတူ သုံးထားလိုက်ပါမည်။
+        url: 'https://drive.google.com/uc?export=download&id=1fwo_Dd-UmzvL7ZQk5MLymamXTTSvSqBg',
+        title: 'Thai Schoolgirl showing off her fake tits (TEST) - GD', 
         
-        // ⚠️ ဒီနေရာမှာတော့ ပထမဗီဒီယိုနဲ့ Link အတူတူ ထားလိုက်ပါတယ်။
-        download: 'https://u.pcloud.link/publink/show?code=XZMgYM5Zn4G1madJ1c5RF0rUj0RA08t6fTG7',
+        download: 'https://drive.google.com/uc?export=download&id=1fwo_Dd-UmzvL7ZQk5MLymamXTTSvSqBg',
         
         currentLikes: 15, 
         userLiked: false, 
         currentComments: []
     }
 ];
-// ... ကျန်တဲ့ code များ
 
 
 let currentVideoIndex = 0; 
