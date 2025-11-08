@@ -254,7 +254,19 @@
 
         <button onclick="window.showPage('home-page')" style="background-color: #6c757d;">နောက်သို့</button>
     </div>
+    <div id="admin-page" class="page" style="display: none;">
+    <h2>👑 Admin Panel</h2>
+    <div id="admin-status" style="color: red; margin-bottom: 10px;"></div>
     
+    <button onclick="loadUserList()" style="margin-bottom: 15px;">👤 User စာရင်း ပြန်လည်စစ်ဆေးရန်</button>
+    
+    <div id="user-list-container">
+        <h3>မှတ်ပုံတင်ထားသော User များ (Firestore မှ)</h3>
+        <ul id="user-list">
+            <li>ကျေးဇူးပြု၍ စောင့်ဆိုင်းပါ။...</li>
+        </ul>
+    </div>
+    </div>
     <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
