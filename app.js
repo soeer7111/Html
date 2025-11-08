@@ -46,37 +46,36 @@ function loadProfileData() {
 // 🚨 Part 3: Authentication (Login/Register/Logout)
 // =================================================
 // Login Function (ပြင်ဆင်ချက်)
-window.handleLogin = async () => {
-    const emailInput = document.getElementById('login-username').value.trim();
-    const password = document.getElementById('login-password').value.trim();
-    const messageDiv = document.getElementById('login-message');
-    const email = emailInput.includes('@') ? emailInput : `${emailInput}@dummy.com`; 
+// =================================================
+// 🚨 Part 3: Authentication (Login/Register/Logout) အောက်မှာ
+// =================================================
 
-    messageDiv.textContent = 'ဝင်ရောက်နေပါသည်။'; 
+// ... (handleLogin, handleRegister, handleLogout functions များရှိရပါမည်)
 
-    try {
-        const result = await window.auth.signInWithEmailAndPassword(email, password); // Result ကို ဖမ်းယူပါ
+// ✅ ဤသည်မှာ ERROR မတက်စေရန် အစားထိုးရမည့် Auth State Check Logic ဖြစ်သည်
+// (ADMIN_EMAIL ကို စောစောစီးစီး ခေါ်သုံးခြင်းမှ ရှောင်ရှားရန်)
+window.auth.onAuthStateChanged((user) => {
+    // 1. Loading Screen ကို ဖျောက်ပါ
+    const loadingPage = document.getElementById('loading-page');
+    if (loadingPage) loadingPage.style.display = 'none';
+
+    // 2. Navigation Bar ကို ကိုင်တွယ်ပါ
+    const navBar = document.getElementById('nav-bar');
+    if (user) {
+        // Login ဝင်ထားရင်
+        if (navBar) navBar.style.display = 'flex'; 
         
-        // ✅ Firestore ထဲကို User Data သိမ်းဆည်းရန် ထပ်တိုးလိုက်သည်
-        await saveUserDataToFirestore(result.user); 
-
-        messageDiv.textContent = 'Login အောင်မြင်ပါသည်။'; 
+        // 3. Home Page ကို ပြပါ
         showPage('home-page'); 
 
-    } catch (error) {
-        messageDiv.textContent = 'အသုံးပြုသူအမည် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။';
+    } else {
+        // Login မဝင်ထားရင်
+        if (navBar) navBar.style.display = 'none';
+        
+        // 3. Login Page ကို ပြပါ
+        showPage('login-page');
     }
-};
-
-// Logout Function
-window.handleLogout = async () => {
-    try {
-        await window.auth.signOut();
-    } catch (error) {
-        console.error("Logout Error:", error);
-    }
-};
-
+});
 // =================================================
 // 🚨 Part 3: Authentication (Login/Register/Logout) အောက်မှာ
 // =================================================
