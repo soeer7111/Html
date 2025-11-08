@@ -391,20 +391,122 @@ function renderSidebar() {
 // 🚨 Part 7: Admin Panel Logic (New)
 // =================================================
 
-// ⚠️ Admin Email ကို သတ်မှတ်ခြင်း (သင့်ရဲ့ Admin Username ကို @dummy.com ထည့်ပြီး ဖြည့်ပါ)
-const ADMIN_EMAIL = 'soeer71@dummy.com'; // ဥပမာ- 'soeer71' ဆိုရင် ဒီလိုရေးပါ
+// ⚠️ Admin Email ကို သတ်မှတ်ခြင်း (သင့်ရဲ့ Admin Email ကို ဒီမှာ ထည့်ပါ)
+const ADMIN_EMAIL = 'soeer71@dummy.com'; // ဥပမာ- 'admin@dummy.com'
 
 function checkAdminStatus() {
-    // ... (ကျန်တဲ့ checkAdminStatus functions များ) ...
+    const user = window.auth.currentUser;
+    const adminStatusDiv = document.getElementById('admin-status');
+    const userListContainer = document.getElementById('user-list-container');
+    
+    if (!user) {
+        adminStatusDiv.textContent = 'Admin ဝင်ရောက်ထားခြင်း မရှိပါ။';
+        userListContainer.style.display = 'none';
+        return false;
+    }
+
+    const currentUsername = user.email.includes('@dummy.com') ? user.email.replace('@dummy.com', '') : user.email.split('@')[0];
+
+    if (currentUsername === ADMIN_EMAIL.replace('@dummy.com', '')) {
+        adminStatusDiv.textContent = '✅ Admin အဖြစ် ဝင်ရောက်ထားပါသည်။';
+        userListContainer.style.display = 'block';
+        loadUserList(); // Admin ဖြစ်မှ User List ကို Load လုပ်ပါ
+        return true;
+    } else {
+        adminStatusDiv.textContent = `❌ သင့်မှာ Admin ခွင့်ပြုချက် မရှိပါ။ (Login: ${currentUsername})`;
+        userListContainer.style.display = 'none';
+        return false;
+    }
 }
 window.checkAdminStatus = checkAdminStatus;
 
+
 window.loadUserList = async () => {
-    // ... (ကျန်တဲ့ loadUserList functions များ) ...
+    if (!checkAdminStatus()) return; // Admin မဟုတ်ရင် ရပ်လိုက်ပါ
+
+    const userList = document.getElementById('user-list');
+    userList.innerHTML = '<li>User Data များကို ခေါ်ယူနေပါသည်။...</li>';
+
+    try {
+        // Firestore ကနေ User Collection ကို ခေါ်ယူပါ (Collection နာမည်ကို 'users' လို့ သတ်မှတ်ပါတယ်)
+        const snapshot = await window.db.collection('users').get(); 
+        
+        if (snapshot.empty) {
+            userList.innerHTML = '<li>မှတ်ပုံတင်ထားသော User မရှိပါ။</li>';
+            return;
+        }
+
+        userList.innerHTML = '';
+        snapshot.forEach(doc => {
+            const userData = doc.data();
+            const li = document.createElement('li');
+            li.style.cssText = 'border-bottom: 1px solid #ccc; padding: 5px 0; margin-bottom: 5px;';
+            li.innerHTML = `
+                <strong>User ID:</strong> ${doc.id}<br>
+                <strong>Phone/Display Name:</strong> ${userData.displayName || 'N/A'}<br>
+                <strong>Email:</strong> ${userData.email || 'N/A'}<br>
+                <strong>Registered:</strong> ${new Date(userData.creationTime).toLocaleString()}<br>
+            `;
+            userList.appendChild(li);
+        });
+
+    } catch (error) {
+        console.error("Error loading user list:", error);
+        userList.innerHTML = `<li>Data ခေါ်ယူရာတွင် အမှားဖြစ်ပွားပါသည်။: ${error.message}</li>`;
+    }
 };
 
-// ... (saveUserDataToFirestore, handleLogin, handleRegister functions များကိုလည်း ထည့်သွင်းပါ) ...
+// -----------------------------------------------------------------------
+// ⚠️ ရှင်းလင်းချက်- User စာရင်းသွင်းတဲ့အခါ Firestore ထဲကို Data ထည့်ဖို့
+// -----------------------------------------------------------------------
 
-// ⚠️ သတိပြုရန်: updateSidebarHighlight() သည် renderSidebar() အောက်တွင် မပြောင်းမလဲ ရှိနေရပါမည်။
-// ၎င်းအပေါ်မှ Code များကိုသာ အစားထိုးပါ။
+// ✅ Login/Register ပြီးတိုင်း User Data ကို Firestore ထဲ သိမ်းဆည်းဖို့ handleLogin ကို ပြင်ဆင်ပါ
+window.handleLogin = async () => {
+    // ... (ရှိပြီးသား code များ)
+    try {
+        const result = await window.auth.signInWithEmailAndPassword(email, password);
+        
+        // Login အောင်မြင်ရင် Firestore ကို Data Update/Create လုပ်ပါ
+        await saveUserDataToFirestore(result.user);
+        
+        messageDiv.textContent = 'Login အောင်မြင်ပါသည်။'; 
+        showPage('home-page'); 
+
+    } catch (error) {
+        messageDiv.textContent = 'အသုံးပြုသူအမည် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။';
+    }
+};
+
+// ✅ Register ပြီးတိုင်း User Data ကို Firestore ထဲ သိမ်းဆည်းဖို့ handleRegister ကို ပြင်ဆင်ပါ
+window.handleRegister = async () => {
+    // ... (ရှိပြီးသား code များ)
+    try {
+        const result = await window.auth.createUserWithEmailAndPassword(email, password);
+        await window.auth.signInWithEmailAndPassword(email, password); 
+        
+        await window.auth.currentUser.updateProfile({
+            displayName: emailInput 
+        });
+
+        // Register အောင်မြင်ရင် Firestore ကို Data Update/Create လုပ်ပါ
+        await saveUserDataToFirestore(result.user);
+        
+        messageDiv.textContent = 'မှတ်ပုံတင် အောင်မြင်ပါသည်။ ခဏစောင့်ပါ။'; 
+    } catch (error) {
+        // ... (ကျန်တဲ့ error handling များ)
+    }
+};
+
+
+// 💡 Helper Function: User Data ကို Firestore ထဲသိမ်းဆည်းရန်
+async function saveUserDataToFirestore(user) {
+    const userRef = window.db.collection('users').doc(user.uid);
+    await userRef.set({
+        email: user.email,
+        displayName: user.displayName || user.email.replace('@dummy.com', ''),
+        creationTime: user.metadata.creationTime,
+        lastSignInTime: user.metadata.lastSignInTime,
+        // နောက်ထပ် သိမ်းဆည်းလိုတဲ့ အချက်အလက်များကို ထပ်ထည့်နိုင်ပါတယ်
+    }, { merge: true }); // merge: true သည် ရှိပြီးသား data များကို မဖျက်ဘဲ အသစ်များကို ထပ်ထည့်ပေးပါမည်။
+}
 
