@@ -415,6 +415,7 @@ window.checkAdminStatus = checkAdminStatus;
 
 
 window.loadUserList = async () => {
+    // ⚠️ Note: checkAdminStatus() သည် Part 7 တွင် ရှိပြီးသားဖြစ်ရပါမည်။
     if (!checkAdminStatus()) return; 
 
     const userList = document.getElementById('user-list');
@@ -438,6 +439,8 @@ window.loadUserList = async () => {
                 <strong>Phone/Display Name:</strong> ${userData.displayName || 'N/A'}<br>
                 <strong>Email:</strong> ${userData.email || 'N/A'}<br>
                 <strong>Registered:</strong> ${new Date(userData.creationTime).toLocaleString()}<br>
+                
+                <strong>Last Sign In:</strong> ${new Date(userData.lastSignInTime).toLocaleString()}<br> 
             `;
             userList.appendChild(li);
         });
@@ -447,6 +450,7 @@ window.loadUserList = async () => {
         userList.innerHTML = `<li>Data ခေါ်ယူရာတွင် အမှားဖြစ်ပွားပါသည်။: ${error.message}</li>`;
     }
 };
+// window.loadUserList ကို အစားထိုးပါ
 
 // -----------------------------------------------------------------------
 // ⚠️ ဤ Functions များကို Part 3 တွင် ရှိသင့်သော်လည်း ရှင်းလင်းရန် ဤနေရာတွင် ထားပါသည်
