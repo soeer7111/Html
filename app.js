@@ -110,7 +110,7 @@ window.auth.onAuthStateChanged((user) => {
         // 3. Login Page ကို ပြပါ
         showPage('login-page');
     }
-});
+
 
         // 4. Admin Account ဖြစ်မဖြစ် စစ်ဆေးပြီး Profile မှာ Admin Button ပြသရန်
         const adminButton = document.getElementById('admin-nav-button');
