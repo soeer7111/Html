@@ -320,6 +320,10 @@ function renderComments(video) {
 // 🚨 Part 6: Video Sidebar/List Functions (Video Player Functions အောက်မှာ ထားသည်)
 // =================================================
 
+// =================================================
+// 🚨 Part 6: Video Sidebar/List Functions (Video Player Functions အောက်မှာ ထားသည်)
+// =================================================
+
 function updateSidebarHighlight() {
     document.querySelectorAll('.sidebar-item').forEach((item, index) => {
         item.classList.remove('active');
@@ -336,10 +340,21 @@ function renderSidebar() {
     sidebar.innerHTML = '<h4>နောက်ထပ်videoများ</h4>';
     videos.forEach((video, index) => {
         const item = document.createElement('div');
-        item.className = 'sidebar-item';
-        item.textContent = `${index + 1}. ${video.title}`;
+        // 💡 sidebar-item အစား marq-item ကိုပါ ထည့်လိုက်သည်
+        item.className = `sidebar-item marq-item`; 
+        
+        // 💡 Text ကို <marquee> သို့မဟုတ် CSS animation အတွက် <span> ထဲ ထည့်သည်
+        item.innerHTML = `
+            <span class="video-index">${index + 1}.</span>
+            <span class="video-title-marquee">${video.title}</span>
+        `;
+        
         item.onclick = () => loadVideo(video, index);
         sidebar.appendChild(item);
     });
     updateSidebarHighlight();
 }
+
+// ⚠️ သတိပြုရန်: updateSidebarHighlight() သည် renderSidebar() အောက်တွင် မပြောင်းမလဲ ရှိနေရပါမည်။
+// ၎င်းအပေါ်မှ Code များကိုသာ အစားထိုးပါ။
+
