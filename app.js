@@ -77,30 +77,42 @@ window.handleLogout = async () => {
     }
 };
 
-// Auth State Check (မပြင်ရသေးသော code ကို ဒီနေရာမှာပဲ ဆက်ထားပါ)
-// ... (ရှိပြီးသား Auth State Check code များ)
+// =================================================
+// 🚨 Part 3: Authentication (Login/Register/Logout) အောက်မှာ
+// =================================================
 
-// Auth State Check 
+// ... (handleLogin, handleRegister, handleLogout functions များရှိရပါမည်)
+
+// ✅ ဤ Firebase Auth State Check Logic အဟောင်းကို ဖျက်ပြီး အောက်က Code ကို အစားထိုးပါ
+// (Auth State Check Logic ကို အစားထိုးပါ)
 window.auth.onAuthStateChanged((user) => {
-    if (user) {
-        const displayUsername = user.email.includes('@dummy.com') ? user.email.replace('@dummy.com', '') : user.email.split('@')[0];
+    // 1. Loading Page ကို ဖျောက်ပါ
+    document.getElementById('loading-page').style.display = 'none';
 
-        document.getElementById('username-display').textContent = displayUsername; 
-        document.getElementById('profile-username').textContent = displayUsername; 
+    if (user) {
+        // User Login ဝင်ထားရင်
+        // 2. Navigation Bar ကို ပြပါ (Logout Button ပါဝင်သည်)
+        document.getElementById('nav-bar').style.display = 'flex'; 
         
-        const creationDate = user.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleString() : 'N/A';
-        const lastLogin = user.metadata.lastSignInTime ? new Date(user.metadata.lastSignInTime).toLocaleString() : 'N/A';
-        document.getElementById('profile-registered-date').textContent = creationDate;
-        document.getElementById('profile-last-login').textContent = lastLogin;
-        
-        if (document.getElementById('home-page').style.display === 'none') {
-            showPage('home-page'); 
+        // 3. Home Page ကို တိုက်ရိုက် ပြသပါ
+        // (Note: showPage('home-page') ကို ခေါ်သောအခါ initializeVideoPlayer ကိုလည်း ခေါ်ပါသည်)
+        showPage('home-page'); 
+
+        // 4. Admin Account ဖြစ်မဖြစ် စစ်ဆေးပြီး Profile မှာ Admin Button ပြသရန်
+        const adminButton = document.getElementById('admin-nav-button');
+        if (adminButton && user.email === ADMIN_EMAIL) {
+             adminButton.style.display = 'block';
         }
+
     } else {
+        // User Login မဝင်ထားရင်
+        // 2. Navigation Bar ကို ဝှက်ပါ
+        document.getElementById('nav-bar').style.display = 'none';
+        
+        // 3. Login Page ကို ပြပါ
         showPage('login-page');
     }
 });
-
 
 // =================================================
 // 🚨 Part 4: Profile Update Logic (Photo Upload ဖြုတ်ထားသည်)
