@@ -182,6 +182,19 @@ let videos = [
         currentLikes: 15, 
         userLiked: false, 
         currentComments: []
+    },
+        { 
+        id: 3, 
+        // ✅ Pcloud လင့်ခ်အသစ်ကို 'url' မှာ ထည့်သွင်းလိုက်ပါပြီ
+        url: 'https://www.dropbox.com/scl/fi/zglupxm7oaa1xzfzlf427/VID_20251108_164004_870.mp4?rlkey=pe5pxns9stqmzz2hg2lxpjxnu&st=irvwtia2&dl=1',
+        title: 'ထိုင်း‌ ကျောင်းသူလေး', 
+        
+        // ✅ Pcloud လင့်ခ်အသစ်ကို 'download' မှာ ထည့်သွင်းလိုက်ပါပြီ
+        download: 'https://www.dropbox.com/scl/fi/zglupxm7oaa1xzfzlf427/VID_20251108_164004_870.mp4?rlkey=pe5pxns9stqmzz2hg2lxpjxnu&st=irvwtia2&dl=1', 
+        
+        currentLikes: 8, 
+        userLiked: false, 
+        currentComments: []
     }
 ];
 
