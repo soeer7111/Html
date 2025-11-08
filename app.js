@@ -105,6 +105,18 @@ window.auth.onAuthStateChanged((user) => {
 // =================================================
 // 🚨 Part 4: Profile Update Logic (Photo Upload ဖြုတ်ထားသည်)
 // =================================================
+// 🚨 Part 4: Profile Page Logic အောက်က loadProfileData ကို ပြင်ပါ
+window.loadProfileData = () => {
+    // ... (ရှိပြီးသား profile code များ) ...
+
+    // Admin Button ကို စစ်ဆေးပြီး ပြသခြင်း
+    const adminButton = document.getElementById('admin-nav-button');
+    if (checkAdminStatus()) {
+        adminButton.style.display = 'block'; // Admin ဖြစ်ရင် ပြပါ
+    } else {
+        adminButton.style.display = 'none'; // မဟုတ်ရင် ဖျောက်ပါ
+    }
+};
 
 // Profile အချက်အလက်များ (ဖုန်းနံပါတ်) ကို Update လုပ်ခြင်း
 window.updateProfileDetails = async () => {
