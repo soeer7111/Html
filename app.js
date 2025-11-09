@@ -251,6 +251,28 @@ window.toggleChatBox = () => {
         loadChatMessages();
     }
 };
+// 🚨 Part 5: Chatbox Logic အောက်တွင် ထပ်ထည့်ရန်
+// 🗑️ Admin က Message ကို ဖျက်ရန် Function
+window.deleteMessage = async (messageId) => {
+    const user = window.auth.currentUser;
+    // 💡 Admin ဖြစ်မဖြစ် စစ်ဆေးခြင်း
+    if (!user || user.email !== 'soeer71@dummy.com') {
+        alert("❌ သင့်တွင် ဤစာကို ဖျက်ခွင့်မရှိပါ။ (Admin သာ ဖျက်နိုင်ပါသည်။)");
+        return;
+    }
+    
+    if (confirm("ဤ Chat Message ကို ဖျက်မှာ သေချာပါသလား။")) {
+        try {
+            // ✅ Firestore မှ Message ကို ဖျက်ခြင်း
+            await window.db.collection('chats').doc(messageId).delete();
+            // Real-time Listener က အလိုအလျောက် update လုပ်ပါမည်။
+        } catch (error) {
+            console.error("Error deleting message:", error);
+            alert(`စာဖျက်ရာတွင် အမှားဖြစ်ပွားပါသည်။: ${error.message}`);
+        }
+    }
+};
+
 
 // 🚨 sendMessage Function ကို အစားထိုးပါ (Part 5)
 window.sendMessage = async () => {
@@ -282,19 +304,12 @@ window.sendMessage = async () => {
     }
 };
 
-
-// =================================================
-// 🚨 Part 5: loadChatMessages Function (Final Admin Crown Fix)
-// =================================================
-
-// Chat Message များ Real-time Load လုပ်ခြင်း
-let unsubscribeChat; 
+// 🚨 loadChatMessages Function ကို ပြန်လည် အစားထိုးပါ (Part 5)
 function loadChatMessages() {
     if (unsubscribeChat) unsubscribeChat(); 
 
     const chatMessagesDiv = document.getElementById('chat-messages');
     
-    // messages များကို အချိန်အလိုက် စီပြီး၊ Real-time နားထောင်ခြင်း
     unsubscribeChat = window.db.collection('chats')
         .orderBy('timestamp', 'asc') 
         .limit(50) 
@@ -302,29 +317,35 @@ function loadChatMessages() {
             chatMessagesDiv.innerHTML = ''; 
             snapshot.forEach(doc => {
                 const data = doc.data();
+                const messageId = doc.id; // ✅ Message ID ကို ဖျက်ဖို့အတွက် ရယူခြင်း
                 const messageElement = document.createElement('div');
                 const time = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : '...';
                 
-                // 💡 Admin ကို Crown icon နဲ့ ပြခြင်း Logic
-                // 🚨 Note: ဤနေရာတွင် Firestore data.username ဖြင့်သာ စစ်ဆေးနေသည်
-                const isUserAdmin = data.username === 'soeer71@dummy.com' || data.username.includes('dummy'); 
-                const displayName = isUserAdmin ? `${data.username} 👑` : data.username;
+                // Admin ဖြစ်မဖြစ် စစ်ဆေးခြင်း
+                const isUserAdmin = data.username.includes('@dummy.com'); 
+                const displayUsername = data.username.split('@')[0];
+                const displayName = isUserAdmin ? `${displayUsername} 👑` : displayUsername;
                 
-                // ဤနေရာတွင် display တွင် Username ကိုပဲ ပြသမည်ဆိုပါက
-                // const displayUsername = data.username.split('@')[0];
-                // const displayName = isUserAdmin ? `${displayUsername} 👑` : displayUsername;
-
-
+                // 🗑️ Delete Button HTML ကို Admin ဖြစ်မှသာ ပြသခြင်း
+                const deleteButtonHtml = isUserAdmin 
+                    ? `<button onclick="window.deleteMessage('${messageId}')" style="background: none; border: none; color: #e74c3c; font-size: 10px; cursor: pointer; float: right; margin-left: 5px;">[X]</button>`
+                    : '';
+                
                 messageElement.innerHTML = `
-                    <p style="margin: 5px 0 10px 0; font-size: 14px; border-bottom: 1px dotted #eee; padding-bottom: 5px; color: black;">
-                        <strong style="color: ${isUserAdmin ? '#c0392b' : '#34495e'};">${displayName}:</strong> 
-                        <span style="color: black;">${data.message}</span>
-                        <span style="font-size: 10px; color: #95a5a6; float: right;">${time}</span>
+                    <p style="margin: 5px 0 10px 0; font-size: 14px; border-bottom: 1px dotted #eee; padding-bottom: 5px; color: black; display: flex; justify-content: space-between; align-items: flex-start;">
+                        <span style="flex-grow: 1;">
+                            <strong style="color: ${isUserAdmin ? '#c0392b' : '#34495e'};">${displayName}:</strong> 
+                            <span style="color: black;">${data.message}</span>
+                        </span>
+                        
+                        <span style="display: flex; align-items: center;">
+                            <span style="font-size: 10px; color: #95a5a6;">${time}</span>
+                            ${deleteButtonHtml} 
+                        </span>
                     </p>
                 `;
                 chatMessagesDiv.appendChild(messageElement);
             });
-            // အောက်ဆုံးကို အလိုအလျောက် Scroll ဆွဲခြင်း
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         }, error => {
             console.error("Error loading chat messages:", error);
