@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="my">
+<!DOCTYPE html>divvhtml lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -237,16 +236,17 @@
             </div>
         </main>
     </div>
-
-    <div id="profile-page" class="page">
+   <div id="profile-page" class="page">
     <h2>👤 User Profile</h2>
     <p>ဤနေရာတွင် သင်၏ အချက်အလက်များကို ပြောင်းလဲနိုင်ပါသည်။</p>
     
-    <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
-        <img id="profile-photo" src="default_user.png" alt="Profile Photo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
-        <input type="file" id="photo-upload-input" accept="image/*">
-        <button onclick="uploadProfilePhoto()">Upload Photo</button>
-        <div id="photo-upload-message" style="margin-top: 5px; color: green;"></div>
+    <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; text-align: center;">
+        <img id="profile-photo" src="default_user.png" alt="Profile Photo" 
+             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid #333;">
+        
+        <input type="file" id="photo-upload-input" accept="image/*" style="display: block; margin: 10px auto;">
+        <button onclick="uploadProfilePhoto()" style="background-color: #28a745; color: white;">Upload Photo</button>
+        <div id="photo-upload-message" style="margin-top: 5px; color: green; font-weight: bold;"></div>
     </div>
     
     <div id="user-info-display">
@@ -259,25 +259,39 @@
 
     <h3>✏️ Change Username</h3>
     <input type="text" id="new-username-input" placeholder="New Username" style="width: 100%; padding: 8px; margin-bottom: 5px;">
-    <button onclick="changeUsername()">Save Username</button>
+    <button onclick="changeUsername()" style="background-color: #007bff; color: white;">Save Username</button>
     <div id="username-message" style="margin-top: 5px; color: green;"></div>
 
     <hr style="margin: 20px 0;">
 
     <h3>🔒 Password Reset</h3>
     <p>Password အသစ်တစ်ခု ရယူရန်အတွက် သင့် Email သို့ Reset Link ပို့ပါမည်။</p>
-    <button onclick="sendPasswordResetEmail()">Send Reset Link</button>
+    <button onclick="sendPasswordResetEmail()" style="background-color: #ffc107; color: #333; border: none;">Send Reset Link</button>
     <div id="password-reset-message" style="margin-top: 5px; color: orange;"></div>
     
     <hr style="margin: 20px 0;">
 
-    <button onclick="showPage('admin-page')" id="admin-nav-button" style="display:none; background-color: darkred; color: white;">
+    <button onclick="showPage('admin-page')" id="admin-nav-button" style="display:none; background-color: darkred; color: white; padding: 10px 15px;">
         👑 Admin Panel
     </button>
 </div>
-
+<div id="admin-page" class="page" style="display: none;">
+    <h2>👑 Admin Panel</h2>
     
-    <div id="user-list-container">
+    <div style="padding: 10px; border: 2px solid darkred; margin-bottom: 20px;">
+        <p id="admin-status" style="font-weight: bold; color: darkred;">Admin ခွင့်ပြုချက် စစ်ဆေးနေပါသည်။...</p>
+    </div>
+    
+    <div id="user-list-container" style="display:none;">
+        <h3>Registered Users (from Firestore)</h3>
+        <p>မှတ်ပုံတင်ထားသော User များစာရင်း (Email, Display Name/Phone, Register Time) ကို ပြသထားပါသည်။</p>
+        
+        <ul id="user-list" style="list-style-type: none; padding: 0;">
+            <li>Please wait...</li> 
+        </ul>
+    </div>
+</div>
+  <div id="user-list-container">
         <h3>မှတ်ပုံတင်ထားသော User များ (Firestore မှ)</h3>
         <ul id="user-list">
             <li>ကျေးဇူးပြု၍ စောင့်ဆိုင်းပါ။...</li>
