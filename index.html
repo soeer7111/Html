@@ -237,18 +237,19 @@
 
         <main class="video-layout">
             <div class="player-area">
-                <video id="my-video" class="video-js vjs-big-play-centered" controls preload="auto" data-setup='{}'>
-                    <p class="vjs-no-js">To view this video please enable JavaScript...</p>
-                </video>
-                <div class="video-controls">
-                    <div class="video-title-container">
-                        <h3 id="current-video-title-text"></h3> 
-                    </div>
-                    <div class="action-buttons" style="display: flex; gap: 10px;">
-                        <button id="like-button" onclick="window.toggleLike()" style="width: auto;">
-                            👍 လိုက်ခ် (<span id="like-count">0</span>)
-                        </button>
-                        <a id="download-link" href="#" download style="width: auto;"><button style="width: auto;">⬇️ ဒေါင်းလုဒ်</button></a>
+                <div class="video-container">
+    <video id="my-video" class="video-js vjs-default-skin"></video>
+    
+    <ul id="video-sidebar-list" class="video-list">
+        </ul>
+</div>
+
+<h3 id="current-video-title-text"></h3>
+<div class="video-controls-below">
+    <button id="like-button" onclick="window.toggleLike()">👍 လိုက်ခ် (0)</button>
+    <a id="download-link" href="#" target="_blank">⬇️ Download</a>
+
+
                     </div>
                 </div>
             </div>
