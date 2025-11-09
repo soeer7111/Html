@@ -412,9 +412,17 @@ function renderSidebar() {
 // =================================================
 
 // 💡 Helper Function: User Data ကို Firestore ထဲသိမ်းဆည်းရန်
+// =================================================
+// 🚨 Part 7: Admin Panel Logic (FINAL WORKING VERSION)
+// =================================================
+
+// 💡 Helper Function: User Data ကို Firestore ထဲသိမ်းဆည်းရန်
 async function saveUserDataToFirestore(user) {
     const creationTime = user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : Date.now();
     const lastSignInTime = user.metadata.lastSignInTime ? new Date(user.metadata.lastSignInTime).getTime() : Date.now();
+    
+    // ⚠️ Admin Email ဖြစ်ပါက is_admin: true အလိုအလျောက် ပေးခြင်း
+    const isAdminUser = user.email === ADMIN_EMAIL; 
 
     const userRef = window.db.collection('users').doc(user.uid);
     try {
@@ -423,6 +431,7 @@ async function saveUserDataToFirestore(user) {
             displayName: user.displayName || user.email.replace('@dummy.com', ''),
             creationTime: creationTime,
             lastSignInTime: lastSignInTime,
+            is_admin: isAdminUser // ✅ Admin flag ကို Firestore ထဲ ထည့်လိုက်ပါပြီ
         }, { merge: true });
     } catch (error) {
         console.error("Error saving user data to Firestore:", error);
@@ -431,35 +440,49 @@ async function saveUserDataToFirestore(user) {
 window.saveUserDataToFirestore = saveUserDataToFirestore;
 
 
-function checkAdminStatus() {
+async function checkAdminStatus() {
     const user = window.auth.currentUser;
     const adminStatusDiv = document.getElementById('admin-status');
     const userListContainer = document.getElementById('user-list-container');
     
-    // 1. Admin Page တွင်သာ UI များကို စစ်ဆေးပါ
-    if (adminStatusDiv) {
-        if (!user) {
-            adminStatusDiv.textContent = 'Admin ဝင်ရောက်ထားခြင်း မရှိပါ။';
-            if (userListContainer) userListContainer.style.display = 'none';
-            return false;
-        }
+    if (!user) {
+        if (adminStatusDiv) adminStatusDiv.textContent = 'Admin ဝင်ရောက်ထားခြင်း မရှိပါ။';
+        if (userListContainer) userListContainer.style.display = 'none';
+        return false;
+    }
 
-        // 2. Admin Status စစ်ဆေးခြင်း (Global ADMIN_EMAIL ကို သုံးသည်)
-        if (user.email === ADMIN_EMAIL) {
-            adminStatusDiv.textContent = '✅ Admin အဖြစ် ဝင်ရောက်ထားပါသည်။';
+    // 1. စတင်စစ်ဆေးနေပါပြီ
+    if (adminStatusDiv) adminStatusDiv.textContent = 'Checking admin permissions...';
+
+    try {
+        // 2. Firestore ကနေ is_admin flag ကို ဆွဲထုတ်စစ်ဆေးခြင်း
+        const userDoc = await window.db.collection('users').doc(user.uid).get();
+        const userData = userDoc.data();
+        
+        // 3. Admin စစ်ဆေးခြင်း (Email သို့မဟုတ် Firestore flag)
+        const isUserAdmin = userData && userData.is_admin === true; 
+
+        if (isUserAdmin || user.email === ADMIN_EMAIL) {
+            if (adminStatusDiv) adminStatusDiv.textContent = '✅ Admin အဖြစ် ဝင်ရောက်ထားပါသည်။';
             if (userListContainer) userListContainer.style.display = 'block';
             loadUserList(); // Admin ဖြစ်မှ User List ကို Load လုပ်ပါ
             return true;
         } else {
-            adminStatusDiv.textContent = `❌ သင့်မှာ Admin ခွင့်ပြုချက် မရှိပါ။ (Login: ${user.email.replace('@dummy.com', '')})`;
+            if (adminStatusDiv) adminStatusDiv.textContent = `❌ သင့်မှာ Admin ခွင့်ပြုချက် မရှိပါ။ (Login: ${user.email.replace('@dummy.com', '')})`;
             if (userListContainer) userListContainer.style.display = 'none';
             return false;
         }
+    } catch (error) {
+        console.error("Admin check failed:", error);
+        if (adminStatusDiv) adminStatusDiv.textContent = `🚨 Permission check failed: ${error.message}`;
+        if (userListContainer) userListContainer.style.display = 'none';
+        return false;
     }
-    // 3. Admin Page မဟုတ်ရင် အခြေအနေကိုသာ ပြန်ပေးပါ
-    return user && user.email === ADMIN_EMAIL;
 }
 window.checkAdminStatus = checkAdminStatus;
+
+// ... (loadUserList function ကို မပြောင်းလဲပါ)
+// ... (ကျန်တဲ့ Part 7 Code များကို ယခင်အတိုင်း ဆက်ထားပါ)
 
 
 window.loadUserList = async () => {
