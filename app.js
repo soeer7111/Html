@@ -314,7 +314,6 @@ function loadChatMessages() {
             chatMessagesDiv.innerHTML = '<p style="color: red;">Chat messages များကို Load မလုပ်နိုင်ပါ။</p>';
         });
 }
-
 // 💬 Auth State ပြောင်းတိုင်း chat listener ကို စတင်/ရပ်တန့်ခြင်း
 window.auth.onAuthStateChanged((user) => {
     if (user) {
