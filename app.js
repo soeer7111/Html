@@ -225,7 +225,106 @@ window.sendPasswordResetEmail = async () => {
         messageDiv.textContent = `Error: ${error.message}`;
     }
 };
+// =================================================
+// 🚨 Part 5: Global Chatbox Functionality (အသစ်ထည့်သွင်းပါ)
+// =================================================
 
+// Chatbox ပေါ်/ပျောက် လုပ်ခြင်း
+window.toggleChatBox = () => {
+    const chatBox = document.getElementById('chat-section');
+    const chatToggleBtn = document.getElementById('chat-toggle-btn');
+    
+    if (chatBox.style.display === 'flex') {
+        chatBox.style.display = 'none';
+        chatToggleBtn.style.display = 'block';
+    } else {
+        chatBox.style.display = 'flex';
+        chatToggleBtn.style.display = 'none';
+        // 💬 Chatbox ဖွင့်တာနဲ့ စကားပြောခန်းကို Load လုပ်ပါ
+        loadChatMessages();
+    }
+};
+
+// စာပို့ခြင်း Function
+window.sendMessage = async () => {
+    const user = window.auth.currentUser;
+    const chatInput = document.getElementById('chat-input');
+    const messageText = chatInput.value.trim();
+
+    if (!user) {
+        alert('စာပို့ရန်အတွက် Login ဝင်ပေးပါ။');
+        return;
+    }
+    if (!messageText) return;
+
+    // 💡 Admin/User ရဲ့ Username ကို ယူခြင်း
+    const username = user.email.split('@')[0]; 
+    
+    try {
+        await window.db.collection('chats').add({
+            uid: user.uid,
+            username: username,
+            message: messageText,
+            timestamp: window.firebase.firestore.FieldValue.serverTimestamp() // Firestore Server Time
+        });
+        chatInput.value = ''; // Input ကို ရှင်းခြင်း
+        // အောင်မြင်စွာ ပို့ပြီးသောအခါ Firestore ၏ Real-time Listener က အလိုအလျောက် Update လုပ်ပါမည်။
+    } catch (error) {
+        console.error("Error sending message:", error);
+        alert("စာပို့ရာတွင် အမှားဖြစ်ပွားပါသည်။");
+    }
+};
+
+// Chat Message များ Real-time Load လုပ်ခြင်း
+let unsubscribeChat; // Real-time Listener ကို သိမ်းထားရန်
+function loadChatMessages() {
+    // ယခင် Listener ရှိရင် ဖြုတ်ပစ်ပါ (Page ပြောင်းတိုင်း/ပိတ်တိုင်း မလိုပေမယ့် စနစ်ကျစေရန်)
+    if (unsubscribeChat) unsubscribeChat(); 
+
+    const chatMessagesDiv = document.getElementById('chat-messages');
+    
+    // ✅ messages များကို အချိန်အလိုက် စီပြီး၊ Real-time နားထောင်ခြင်း
+    unsubscribeChat = window.db.collection('chats')
+        .orderBy('timestamp', 'asc') // အစောဆုံးမှ အဆုံးထိ စီပါ
+        .limit(50) // message ၅၀ သာ ပြပါ
+        .onSnapshot(snapshot => {
+            chatMessagesDiv.innerHTML = ''; // ယခင်စာများကို ရှင်းခြင်း
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const messageElement = document.createElement('div');
+                const time = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : '...';
+                
+                // 💡 Admin ကို Crown icon နဲ့ ပြခြင်း
+                const isUserAdmin = data.username.includes('dummy'); 
+                const displayName = isUserAdmin ? `${data.username} 👑` : data.username;
+
+                messageElement.innerHTML = `
+                    <p style="margin: 5px 0; font-size: 14px;">
+                        <strong style="color: ${isUserAdmin ? '#c0392b' : '#34495e'};">${displayName}:</strong> 
+                        <span>${data.message}</span>
+                        <span style="font-size: 10px; color: #95a5a6; float: right;">${time}</span>
+                    </p>
+                `;
+                chatMessagesDiv.appendChild(messageElement);
+            });
+            // 💡 အောက်ဆုံးကို အလိုအလျောက် Scroll ဆွဲခြင်း
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        }, error => {
+            console.error("Error loading chat messages:", error);
+            chatMessagesDiv.innerHTML = '<p style="color: red;">Chat messages များကို Load မလုပ်နိုင်ပါ။</p>';
+        });
+}
+
+// 💬 Auth State ပြောင်းတိုင်း chat listener ကို စတင်/ရပ်တန့်ခြင်း
+window.auth.onAuthStateChanged((user) => {
+    if (user) {
+        // Login ဝင်လာရင် Chatbox ကို စတင်နိုင်ပြီ။
+        // Note: chatbox ကို ဖွင့်မှသာ loadChatMessages() ကို ခေါ်ပါမည်။
+    } else {
+        // Logout လုပ်ရင် Listener ကို ဖြုတ်ပါ
+        if (unsubscribeChat) unsubscribeChat();
+    }
+});
 // =================================================
 // 🚨 Part 5: Video Player & Data Persistence Logic (Like/Comment)
 // =================================================
