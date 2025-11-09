@@ -267,6 +267,7 @@ window.deleteMessage = async (messageId) => {
 };
 
 // Chat Message များ Real-time Load လုပ်ခြင်း
+// Chat Message များ Real-time Load လုပ်ခြင်း
 function loadChatMessages() {
     if (unsubscribeChat) unsubscribeChat(); 
 
@@ -289,8 +290,9 @@ function loadChatMessages() {
                 const displayUsername = data.username.split('@')[0];
                 const displayName = isUserAdmin ? `${displayUsername} 👑` : displayUsername;
                 
+                // 🚨 FIX: Delete Button CSS ကို ပိုမို ခိုင်မာစေရန် ပြင်ဆင်သည်
                 const deleteButtonHtml = (currentUser && currentUser.email === ADMIN_EMAIL) 
-                    ? `<button onclick="window.deleteMessage('${messageId}')" style="background: none; border: none; color: #e74c3c; font-size: 10px; cursor: pointer; float: right; margin-left: 5px;">[X]</button>`
+                    ? `<button onclick="window.deleteMessage('${messageId}')" style="background: none; border: none; color: #e74c3c; font-size: 10px; cursor: pointer; float: right; margin-left: 5px; width: auto; margin-top: 0; padding: 0;">[X]</button>`
                     : '';
                 
                 messageElement.innerHTML = `
@@ -524,5 +526,83 @@ function renderSidebar() {
     updateSidebarHighlight();
 }
 
+
 // 💡 လက်ရှိဖွင့်ထားသော Video ကို Highlight လုပ်ခြင်း
-  
+// =================================================
+// 🚨 Part 7: Admin Panel Logic (User List Fetching)
+// =================================================
+
+// 1. Admin Status ကို စစ်ဆေးပြီး User List ကို Load လုပ်ခြင်း
+window.checkAdminStatus = async () => {
+    const user = window.auth.currentUser;
+    const adminMessageElement = document.getElementById('admin-message');
+    
+    if (!user) {
+        adminMessageElement.innerHTML = '🚫 Login ဝင်ရောက်ထားခြင်းမရှိပါ။';
+        adminMessageElement.style.color = 'red';
+        return;
+    }
+
+    if (user.email === ADMIN_EMAIL) {
+        adminMessageElement.innerHTML = '✅ Logged in as Admin.';
+        adminMessageElement.style.color = 'green';
+        window.fetchUserList(); // Admin ဖြစ်ရင် User List ကို စတင် Load လုပ်သည်
+    } else {
+        adminMessageElement.innerHTML = '🚫 Permission check failed: Not the designated Admin user.';
+        adminMessageElement.style.color = 'red';
+        // Non-admin ဖြစ်ပါက list ကို ရှင်းပစ်ပါ
+        const userListElement = document.getElementById('user-list');
+        if (userListElement) userListElement.innerHTML = '<li>Admin ခွင့်ပြုချက်မရှိပါ။</li>';
+    }
+};
+
+
+// 2. User List ကို Firestore မှ Real-time Fetch လုပ်ခြင်း
+window.fetchUserList = () => {
+    // ယခင် Listener ရှိပါက ဖြုတ်ပါ (Global variable "unsubscribeUsers" ကို သုံးပါ)
+    if (unsubscribeUsers) unsubscribeUsers();
+
+    const userListElement = document.getElementById('user-list');
+    userListElement.innerHTML = '<li>Loading users...</li>';
+    
+    unsubscribeUsers = window.db.collection('users')
+        .orderBy('registeredAt', 'desc')
+        .onSnapshot(snapshot => {
+            userListElement.innerHTML = ''; 
+            snapshot.forEach(doc => {
+                const userData = doc.data();
+                const listItem = document.createElement('li');
+                const displayName = userData.displayName || userData.email.split('@')[0];
+                const isAdmin = userData.email === ADMIN_EMAIL ? ' (👑 Admin)' : '';
+                
+                listItem.innerHTML = `
+                    <div style="border: 1px 
+                     solid #ccc; padding: 10px; margin-bottom: 5px; border-radius: 4px; background: ${userData.email === ADMIN_EMAIL ? '#ffe0e0' : '#f9f9f9'};">
+                        <strong>Username:</strong> ${displayName} ${isAdmin}<br>
+                        <strong>Email:</strong> ${userData.email}<br>
+                        <strong>UID:</strong> ${userData.uid ? userData.uid.substring(0, 10) + '...' : 'N/A'}<br>
+                        <strong>Registered:</strong> ${userData.registeredAt ? new Date(userData.registeredAt.seconds * 1000).toLocaleDateString() : 'N/A'}
+                    </div>
+                `;
+                userListElement.appendChild(listItem);
+            });
+        }, error => {
+            console.error("Error fetching user list:", error);
+            const adminMessageElement = document.getElementById('admin-message');
+            adminMessageElement.innerHTML = `❌ Error: Permission Denied. Check Firestore Rules for 'users' collection!`;
+            adminMessageElement.style.color = 'red';
+            userListElement.innerHTML = `<li>Error: ${error.message}</li>`;
+        });
+};
+
+// =================================================
+// 🚨 Part 8: Initial Page Load on Startup (ဒီအပိုင်းမရှိသေးပါက ထည့်ပါ)
+// =================================================
+
+// 💡 Reload လုပ်သောအခါ hash ပေါ်မူတည်၍ Page ကို စစ်ဆေးခြင်း
+if (window.location.hash) {
+    // Auth State Check က စစ်ပေးမှာမို့ ဤနေရာတွင် ဘာမှ မလုပ်ပါ။
+} else {
+    // Login မဝင်ရသေးပါက auth state check က login-page ကို ပို့ပါလိမ့်မည်။
+}
+
