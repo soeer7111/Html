@@ -165,29 +165,17 @@ window.changeUsername = async () => {
     }
 };
 
-// 3. Profile Photo Upload လုပ်ခြင်း
+// =================================================
+// 🚨 Part 4: Profile Page Logic & All User Update Functions
+// =================================================
+// ... (loadProfileData, changeUsername functions)
+
+// 3. Profile Photo Upload လုပ်ခြင်း (ယာယီ Disable လုပ်ထားပါသည်)
 window.uploadProfilePhoto = async () => {
-    const user = window.auth.currentUser;
-    const fileInput = document.getElementById('photo-upload-input');
     const messageDiv = document.getElementById('photo-upload-message');
-    const file = fileInput.files[0];
-
-    if (!user || !file) { messageDiv.textContent = 'ဓာတ်ပုံဖိုင် ရွေးချယ်ပါ။'; return; }
-
-    messageDiv.textContent = 'Uploading...';
-    try {
-        const storageRef = window.storage.ref(`profile_photos/${user.uid}/${file.name}`);
-        await storageRef.put(file);
-        const photoURL = await storageRef.getDownloadURL();
-
-        await user.updateProfile({ photoURL: photoURL });
-
-        document.getElementById('profile-photo').src = photoURL;
-        messageDiv.textContent = 'ဓာတ်ပုံ အောင်မြင်စွာ တင်ပြီးပါပြီ။';
-
-    } catch (error) {
-        messageDiv.textContent = `Upload Error: ${error.message}`;
-    }
+    // 💡 Credit Card ပြဿနာကြောင့် ယာယီ disable လုပ်ထားသည်
+    messageDiv.textContent = '❌ Photo Upload ဝန်ဆောင်မှု ယာယီ ပိတ်ထားပါသည်။ (Firebase Storage အတွက် Billing လိုအပ်ပါသည်)';
+    console.error("Firebase Storage is disabled due to Billing requirement.");
 };
 
 // 4. Password Reset Email ပို့ခြင်း
