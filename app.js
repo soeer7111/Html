@@ -21,7 +21,7 @@ window.storage = firebase.storage();
 const ADMIN_EMAIL = 'soeer71@dummy.com'; 
 
 // =================================================
-// 🚨 Part 2: Page Navigation & UI Functions (လုံးဝ အစားထိုးပါ)
+// 🚨 Part 2: Page Navigation & UI Functions (Final Version)
 // =================================================
 
 function showPage(pageId) {
@@ -31,7 +31,10 @@ function showPage(pageId) {
     const targetPage = document.getElementById(pageId);
     if (targetPage) targetPage.style.display = 'block';
 
-    // Nav Bar ပြခြင်း/ဖျောက်ခြင်း Logic ကို ဒီမှာ ထားပါ
+    // ✅ URL Hash ကို Update လုပ်ခြင်း (Reload persistence အတွက်)
+    window.location.hash = pageId; 
+
+    // Nav Bar ပြခြင်း/ဖျောက်ခြင်း Logic
     const navBar = document.getElementById('nav-bar');
     if (pageId === 'home-page' || pageId === 'profile-page' || pageId === 'admin-page') {
         if (navBar) navBar.style.display = 'flex';
@@ -49,11 +52,10 @@ function showPage(pageId) {
 }
 window.showPage = showPage;
 
-// ✅ Home Page ကို ပြန်သွားစေရန် Function အသစ်
+// Home Page ကို ပြန်သွားစေရန် Function 
 window.handleGoHome = () => {
     showPage('home-page');
 };
-
 // =================================================
 // 🚨 Part 3: Authentication (Login/Register/Logout)
 // =================================================
@@ -115,28 +117,39 @@ window.handleLogout = async () => {
 
 
 // 4. Auth State Check Logic (Reload တွင် လက်ရှိ Page ကို ထိန်းထားခြင်း)
-let isInitialLoad = true; 
+// =================================================
+// 🚨 Part 3: Authentication Logic (Final Version)
+// =================================================
+
+// 4. Auth State Check Logic (Reload တွင် လက်ရှိ Page ကို URL Hash ဖြင့် ထိန်းထားခြင်း)
+
+// ✅ ဤ Function သည် Reload လုပ်တိုင်း (သို့မဟုတ် Login state ပြောင်းတိုင်း) အလုပ်လုပ်မည်
 window.auth.onAuthStateChanged((user) => {
     const navBar = document.getElementById('nav-bar');
     
+    // 1. Navigation Bar ၏ မြင်ကွင်းကို ထိန်းချုပ်ခြင်း
+    if (navBar) {
+        navBar.style.display = user ? 'flex' : 'none';
+    }
+
     if (user) {
-        // Login ဝင်ထားရင်
-        if (navBar) navBar.style.display = 'flex'; 
+        // 2. Login ဝင်ထားသော User များအတွက် (Persistence Logic)
         
-        if (isInitialLoad) {
-            // ✅ Reload လုပ်ရင် Login/Register page မှာ မဟုတ်ရင် လက်ရှိ Page မှာပဲ နေစေဖို့ စစ်ဆေးသည်
-            const currentPageId = document.querySelector('.page[style*="block"]')?.id;
-            
-            if (!currentPageId || currentPageId === 'login-page' || currentPageId === 'register-page') {
-                 showPage('home-page'); 
-            }
-            // Note: အခြား Page (profile/admin) တွင် ရှိနေပါက ထို Page တွင် ဆက်လက် ရှိနေပါမည်။
-            isInitialLoad = false;
+        // 💡 URL Hash (#profile-page, #admin-page) မှ Page ID ကို ရယူခြင်း
+        const hash = window.location.hash.substring(1); // # ကို ဖြုတ်ပြီး ရယူ
+        
+        // 🚨 Reload လုပ်တဲ့အခါ Hash ရှိရင် ထို Page ကို ပြန်သွားပါမည်။
+        if (hash && hash !== 'login-page' && hash !== 'register-page') {
+            showPage(hash);
+        } else {
+            // Hash မရှိရင် Home Page ကို ပို့ပါမည်။
+            showPage('home-page');
         }
         
     } else {
-        // Login မဝင်ထားရင်
-        if (navBar) navBar.style.display = 'none'; 
+        // 3. Login မဝင်ထားသူများအတွက်
+        
+        // Login Page ကိုသာ ပြပါမည်။
         showPage('login-page');
     }
 });
