@@ -275,39 +275,48 @@ window.sendMessage = async () => {
     }
 };
 
+// =================================================
+// 🚨 Part 5: loadChatMessages Function (Final Admin Crown Fix)
+// =================================================
+
 // Chat Message များ Real-time Load လုပ်ခြင်း
-let unsubscribeChat; // Real-time Listener ကို သိမ်းထားရန်
+let unsubscribeChat; 
 function loadChatMessages() {
-    // ယခင် Listener ရှိရင် ဖြုတ်ပစ်ပါ (Page ပြောင်းတိုင်း/ပိတ်တိုင်း မလိုပေမယ့် စနစ်ကျစေရန်)
     if (unsubscribeChat) unsubscribeChat(); 
 
     const chatMessagesDiv = document.getElementById('chat-messages');
     
-    // ✅ messages များကို အချိန်အလိုက် စီပြီး၊ Real-time နားထောင်ခြင်း
+    // messages များကို အချိန်အလိုက် စီပြီး၊ Real-time နားထောင်ခြင်း
     unsubscribeChat = window.db.collection('chats')
-        .orderBy('timestamp', 'asc') // အစောဆုံးမှ အဆုံးထိ စီပါ
-        .limit(50) // message ၅၀ သာ ပြပါ
+        .orderBy('timestamp', 'asc') 
+        .limit(50) 
         .onSnapshot(snapshot => {
-            chatMessagesDiv.innerHTML = ''; // ယခင်စာများကို ရှင်းခြင်း
+            chatMessagesDiv.innerHTML = ''; 
             snapshot.forEach(doc => {
                 const data = doc.data();
                 const messageElement = document.createElement('div');
                 const time = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : '...';
                 
-                // 💡 Admin ကို Crown icon နဲ့ ပြခြင်း
-                const isUserAdmin = data.username.includes('dummy'); 
+                // 💡 Admin ကို Crown icon နဲ့ ပြခြင်း Logic
+                // 🚨 Note: ဤနေရာတွင် Firestore data.username ဖြင့်သာ စစ်ဆေးနေသည်
+                const isUserAdmin = data.username === 'soeer71@dummy.com' || data.username.includes('dummy'); 
                 const displayName = isUserAdmin ? `${data.username} 👑` : data.username;
+                
+                // ဤနေရာတွင် display တွင် Username ကိုပဲ ပြသမည်ဆိုပါက
+                // const displayUsername = data.username.split('@')[0];
+                // const displayName = isUserAdmin ? `${displayUsername} 👑` : displayUsername;
+
 
                 messageElement.innerHTML = `
-                    <p style="margin: 5px 0; font-size: 14px;">
+                    <p style="margin: 5px 0 10px 0; font-size: 14px; border-bottom: 1px dotted #eee; padding-bottom: 5px; color: black;">
                         <strong style="color: ${isUserAdmin ? '#c0392b' : '#34495e'};">${displayName}:</strong> 
-                        <span>${data.message}</span>
+                        <span style="color: black;">${data.message}</span>
                         <span style="font-size: 10px; color: #95a5a6; float: right;">${time}</span>
                     </p>
                 `;
                 chatMessagesDiv.appendChild(messageElement);
             });
-            // 💡 အောက်ဆုံးကို အလိုအလျောက် Scroll ဆွဲခြင်း
+            // အောက်ဆုံးကို အလိုအလျောက် Scroll ဆွဲခြင်း
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         }, error => {
             console.error("Error loading chat messages:", error);
