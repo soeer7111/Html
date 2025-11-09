@@ -176,28 +176,35 @@ window.loadProfileData = () => {
         }
     }
 };
-
-// 2. Username ပြောင်းလဲခြင်း
-window.changeUsername = async () => {
+// 🚨 sendMessage Function ကို အစားထိုးပါ (Part 5)
+window.sendMessage = async () => {
     const user = window.auth.currentUser;
-    const newUsernameInput = document.getElementById('new-username-input').value.trim();
-    const messageDiv = document.getElementById('username-message');
+    const chatInput = document.getElementById('chat-input');
+    const messageText = chatInput.value.trim();
 
-    if (!user || !newUsernameInput) { messageDiv.textContent = 'Username အသစ် ထည့်သွင်းပါ။'; return; }
+    if (!user) {
+        alert('စာပို့ရန်အတွက် Login ဝင်ပေးပါ။');
+        return;
+    }
+    if (!messageText) return;
+
+    // 💡 ပြင်ဆင်ချက်: Username အစား Email အပြည့်အစုံကို သိမ်းပါ
+    const fullEmail = user.email; 
     
     try {
-        await user.updateProfile({ displayName: newUsernameInput });
-        await window.db.collection('users').doc(user.uid).set({ displayName: newUsernameInput }, { merge: true });
-
-        messageDiv.textContent = 'Username ပြောင်းလဲ အောင်မြင်ပါသည်။';
-        document.getElementById('display-username').textContent = newUsernameInput; 
-        document.getElementById('new-username-input').value = ''; 
-
+        await window.db.collection('chats').add({
+            uid: user.uid,
+            // ✅ Email အပြည့်အစုံကို သိမ်းခြင်း
+            username: fullEmail, 
+            message: messageText,
+            timestamp: window.firebase.firestore.FieldValue.serverTimestamp()
+        });
+        chatInput.value = '';
     } catch (error) {
-        messageDiv.textContent = `Error: ${error.message}`;
+        console.error("Error sending message:", error);
+        alert("စာပို့ရာတွင် အမှားဖြစ်ပွားပါသည်။");
     }
 };
-
 // =================================================
 // 🚨 Part 4: Profile Page Logic & All User Update Functions
 // =================================================
@@ -245,7 +252,7 @@ window.toggleChatBox = () => {
     }
 };
 
-// စာပို့ခြင်း Function
+// 🚨 sendMessage Function ကို အစားထိုးပါ (Part 5)
 window.sendMessage = async () => {
     const user = window.auth.currentUser;
     const chatInput = document.getElementById('chat-input');
@@ -257,23 +264,24 @@ window.sendMessage = async () => {
     }
     if (!messageText) return;
 
-    // 💡 Admin/User ရဲ့ Username ကို ယူခြင်း
-    const username = user.email.split('@')[0]; 
+    // 💡 ပြင်ဆင်ချက်: Username အစား Email အပြည့်အစုံကို သိမ်းပါ
+    const fullEmail = user.email; 
     
     try {
         await window.db.collection('chats').add({
             uid: user.uid,
-            username: username,
+            // ✅ Email အပြည့်အစုံကို သိမ်းခြင်း
+            username: fullEmail, 
             message: messageText,
-            timestamp: window.firebase.firestore.FieldValue.serverTimestamp() // Firestore Server Time
+            timestamp: window.firebase.firestore.FieldValue.serverTimestamp()
         });
-        chatInput.value = ''; // Input ကို ရှင်းခြင်း
-        // အောင်မြင်စွာ ပို့ပြီးသောအခါ Firestore ၏ Real-time Listener က အလိုအလျောက် Update လုပ်ပါမည်။
+        chatInput.value = '';
     } catch (error) {
         console.error("Error sending message:", error);
         alert("စာပို့ရာတွင် အမှားဖြစ်ပွားပါသည်။");
     }
 };
+
 
 // =================================================
 // 🚨 Part 5: loadChatMessages Function (Final Admin Crown Fix)
