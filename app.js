@@ -183,6 +183,38 @@ window.loadProfileData = () => {
         adminButton.style.display = (user.email === ADMIN_EMAIL) ? 'block' : 'none';
     }
 };
+// 2. Username ပြောင်းလဲခြင်း Function (အသစ်ထည့်သွင်းခြင်း)
+window.changeUsername = async () => {
+    const user = window.auth.currentUser;
+    const newUsernameInput = document.getElementById('new-username-input');
+    const newUsername = newUsernameInput.value.trim();
+    const messageDiv = document.getElementById('username-message');
+
+    if (!user) { messageDiv.textContent = 'Login ဝင်ထားသော User ကို မတွေ့ပါ။'; return; }
+    if (!newUsername) { messageDiv.textContent = 'Username အသစ် ထည့်သွင်းပေးပါ။'; return; }
+    if (newUsername.length < 3) { messageDiv.textContent = 'Username သည် ၃ လုံးထက် မနည်းရပါ။'; return; }
+
+    messageDiv.textContent = 'Username ပြောင်းလဲနေပါသည်။...';
+    
+    try {
+        // 1. Firebase Auth တွင် Update လုပ်ခြင်း
+        await user.updateProfile({ displayName: newUsername });
+
+        // 2. Firestore Users collection တွင် Update လုပ်ခြင်း
+        const userRef = window.db.collection('users').doc(user.uid);
+        await userRef.update({ displayName: newUsername });
+
+        // 3. UI ကို ပြန် Load လုပ်ခြင်း
+        loadProfileData(); 
+        messageDiv.textContent = `✅ Username ကို ${newUsername} သို့ ပြောင်းလဲပြီးပါပြီ။`;
+        newUsernameInput.value = '';
+        
+    } catch (error) {
+        console.error("Error updating username:", error);
+        messageDiv.textContent = `❌ Username ပြောင်းရာတွင် အမှားဖြစ်ပွားပါသည်။: ${error.message}`;
+    }
+};
+
 
 // 3. Profile Photo Upload လုပ်ခြင်း (ယာယီ Disable လုပ်ထားပါသည်)
 window.uploadProfilePhoto = async () => {
