@@ -238,27 +238,44 @@
         </main>
     </div>
 
-    <div id="profile-page" class="auth-container page" style="display:none;">
-        <h2>အသုံးပြုသူ ပရိုဖိုင်</h2>
-        <p><strong>အသုံးပြုသူအမည်:</strong> <span id="profile-username">N/A</span></p>
-        <p><strong>မှတ်ပုံတင်သည့်ရက်စွဲ:</strong> <span id="profile-registered-date">N/A</span></p>
-        <p><strong>နောက်ဆုံး ဝင်ရောက်သည့်ရက်စွဲ:</strong> <span id="profile-last-login">N/A</span></p>
-        <button onclick="showPage('admin-page')" id="admin-nav-button" style="display:none;">👑 Admin Panel</button>
-        <hr>
-        <h4>ကိုယ်ရေး အချက်အလက် (ဖုန်းနံပါတ်)</h4>
-        <div class="input-group">
-            <input type="tel" id="profile-phone" placeholder="ဖုန်းနံပါတ် (ဥပမာ: +959xxxxxxxxx)" required>
-        </div>
-        <button onclick="window.updateProfileDetails()">အချက်အလက် သိမ်းရန်</button>
-        <p id="profile-message" class="message"></p>
-
-        <button onclick="window.showPage('home-page')" style="background-color: #6c757d;">နောက်သို့</button>
-    </div>
-    <div id="admin-page" class="page" style="display: none;">
-    <h2>👑 Admin Panel</h2>
-    <div id="admin-status" style="color: red; margin-bottom: 10px;"></div>
+    <div id="profile-page" class="page">
+    <h2>👤 User Profile</h2>
+    <p>ဤနေရာတွင် သင်၏ အချက်အလက်များကို ပြောင်းလဲနိုင်ပါသည်။</p>
     
-    <button onclick="loadUserList()" style="margin-bottom: 15px;">👤 User စာရင်း ပြန်လည်စစ်ဆေးရန်</button>
+    <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
+        <img id="profile-photo" src="default_user.png" alt="Profile Photo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+        <input type="file" id="photo-upload-input" accept="image/*">
+        <button onclick="uploadProfilePhoto()">Upload Photo</button>
+        <div id="photo-upload-message" style="margin-top: 5px; color: green;"></div>
+    </div>
+    
+    <div id="user-info-display">
+        <p><strong>Username:</strong> <span id="display-username">Loading...</span></p>
+        <p><strong>Email:</strong> <span id="display-email">Loading...</span></p>
+        <p><strong>Account Creation Date:</strong> <span id="creation-date">Loading...</span></p>
+    </div>
+
+    <hr style="margin: 20px 0;">
+
+    <h3>✏️ Change Username</h3>
+    <input type="text" id="new-username-input" placeholder="New Username" style="width: 100%; padding: 8px; margin-bottom: 5px;">
+    <button onclick="changeUsername()">Save Username</button>
+    <div id="username-message" style="margin-top: 5px; color: green;"></div>
+
+    <hr style="margin: 20px 0;">
+
+    <h3>🔒 Password Reset</h3>
+    <p>Password အသစ်တစ်ခု ရယူရန်အတွက် သင့် Email သို့ Reset Link ပို့ပါမည်။</p>
+    <button onclick="sendPasswordResetEmail()">Send Reset Link</button>
+    <div id="password-reset-message" style="margin-top: 5px; color: orange;"></div>
+    
+    <hr style="margin: 20px 0;">
+
+    <button onclick="showPage('admin-page')" id="admin-nav-button" style="display:none; background-color: darkred; color: white;">
+        👑 Admin Panel
+    </button>
+</div>
+
     
     <div id="user-list-container">
         <h3>မှတ်ပုံတင်ထားသော User များ (Firestore မှ)</h3>
