@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Video App (Working Demo)</title>
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <style>
+        /* ================================================= */
+        /* 🚨 1. App Content တစ်ခုလုံးကို ဗဟိုပြုပြီး Width သတ်မှတ်ခြင်း */
+        /* ================================================= */
+        .page { 
+            padding: 20px; 
+            background-color: white; 
+            border-radius: 8px; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+            max-width: 400px; 
+            width: 90%; 
+            margin: 20px auto; 
+        }
+
+        /* 2. Video နှင့် Sidebar Container (Flexbox) - အားလုံးကို ဒေါင်လိုက်စီသည် */
+        .video-container-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            align-items: center; 
+            width: 100%;
+        }
+
+        .main-video-content { 
+            min-width: 100%; 
+            width: 100%;
+        }
+
+        /* ================================================= */
+        /* 🚨 3. ဝိုင်းပြထားသော Video စာရင်း (Sidebar) ကိုသာ ထိန်းချုပ်ခြင်း */
+        /* ================================================= */
+        .sidebar { 
+            width: 100%; 
+            background-color: #f9f9f9; 
+            padding: 15px; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+        }
+
+        /* 4. Button များကို ပုံမှန်အတိုင်း ထားခြင်း */
+        .video-info-actions {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .action-buttons-group {
+            display: flex;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Sidebar Item အတွက် Marquee Effect CSS */
+        .marq-item {
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 8px 10px;
+        }
+
+        .video-title-marquee {
+            display: inline-block;
+            animation: marquee 10s linear infinite;
+            padding-left: 100%;
+        }
+
+        .video-index {
+            font-weight: bold;
+            margin-right: 5px;
+            color: #007bff;
+        }
+
+        /* 💡 Animation Keyframes - ညာမှ ဘယ်သို့ အဆုံးမရှိ ရွှေ့လျားစေသည် */
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+        
+        /* CSS Styles */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }
+        .auth-container { max-width: 400px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .input-group input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; transition: background-color 0.3s; }
+        button:hover { background-color: #0056b3; }
+        
+        .message { color: red; margin-top: 10px; }
+        header { background: #333; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Layout: Top/Down Stacking for Mobile Screen */
+        .video-layout { 
+            display: block; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 0; 
+        }
+        .player-area { 
+            width: 100%; 
+            margin-bottom: 5px;
+        }
+        /* 🚨 Video Player Size: Screen အပြည့် အလျား၊ မျက်နှာပြင်ရဲ့ ၃ ပုံ ၁ ပုံ အနံ */
+        #my-video {
+            width: 100% !important; 
+            height: 33vh !important; 
+        }
+        
+        /* 🚨 Video List/Sidebar Style: Background အဖြူ ပြောင်းခြင်း */
+        .sidebar { 
+            width: 100%; 
+            background: white; 
+            padding: 10px; 
+            border-radius: 0; 
+            box-shadow: none; 
+            color: #333; 
+            margin-bottom: 20px; 
+            border: 1px solid #eee; 
+        }
+        .sidebar h4 { color: #333; margin-top: 0; }
+        .sidebar-item { padding: 10px; border-bottom: 1px solid #ccc; cursor: pointer; color: #333; }
+        .sidebar-item:hover { background-color: #f0f0f0; }
+        .sidebar-item.active { background-color: #007bff; color: white; font-weight: bold; }
+        
+        /* Marquee Effect (Video Title) */
+        .video-controls { margin-top: 10px; background: white; padding: 10px; border-radius: 4px; }
+        .video-title-container { overflow: hidden; white-space: nowrap; margin-bottom: 10px; }
+        .video-title-container h3 { 
+            display: inline-block; 
+            padding-left: 100%; 
+            animation: marquee 15s linear infinite; 
+            margin: 0;
+            color: #333;
+        }
+        
+        .comments-section { margin-top: 0; padding: 10px; background: #f9f9f9; border-radius: 4px; margin-bottom: 5px; }
+        .comment-item { border-bottom: 1px dotted #ccc; padding: 5px 0; }
+        .timestamp { font-size: 0.8em; color: #777; margin-left: 10px; }
+        .comment-input-group { display: flex; margin-top: 10px; }
+        .comment-input-group input { flex-grow: 1; margin-right: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="auth-container page" style="display: block;">
+        <h2>အသုံးပြုသူ ဝင်ရောက်ခြင်း (Login)</h2>
+        <div class="input-group">
+            <input type="text" id="login-username" placeholder="အသုံးပြုသူအမည်" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="login-password" placeholder="လျှို့ဝှက်နံပါတ်" required>
+        </div>
+        <button onclick="window.handleLogin()">ဝင်ရောက်ရန်</button>
+        <p id="login-message" class="message"></p>
+        <p class="switch-link">
+            အကောင့် မရှိသေးဘူးလား? <a href="#" onclick="window.showPage('register-page')">မှတ်ပုံတင်ရန်</a>
+        </p>
+    </div>
+    <div id="register-page" class="auth-container page" style="display: none;">
+        <h2>အသုံးပြုသူ မှတ်ပုံတင်ခြင်း (Register)</h2>
+        <p class="note">မှတ်ချက်: Username သာ ထည့်ပါ၊ Email မလိုပါ။</p>
+        <div class="input-group">
+            <input type="text" id="register-username" placeholder="အသုံးပြုသူအမည်" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="register-password" placeholder="လျှို့ဝှက်နံပါတ် (၆ လုံးနှင့်အထက်)" required>
+        </div>
+        <button onclick="window.handleRegister()">မှတ်ပုံတင်ရန်</button>
+        <p id="register-message" class="message"></p>
+        <p class="switch-link">
+            အကောင့် ရှိပြီးသားလား? <a href="#" onclick="window.showPage('login-page')">ဝင်ရောက်ရန်</a>
+        </p>
+    </div>
+    <div id="home-page" class="page" style="display: none;">
+        <header>
+            <div class="logo">Video Stream</div>
+            <div id="nav-bar" class="user-info" style="display: flex; align-items: center; gap: 10px;">
+                <span id="username-display"></span>
+                <div style="width:30px; height:30px; border-radius:50%; background-color:#ffc107; text-align:center; line-height:30px; font-weight:bold; color:#333; cursor:pointer;"
+                     onclick="window.showPage('profile-page')">P</div>
+                     
+                <button onclick="window.handleLogout()" style="width: auto; margin: 0; padding: 5px 10px; background-color: #dc3545;">ထွက်ရန်</button>
+            </div>
+        </header>
+
+        <main class="video-layout">
+            <div class="player-area">
+                <video id="my-video" class="video-js vjs-big-play-centered" controls preload="auto" data-setup='{}'>
+                    <p class="vjs-no-js">To view this video please enable JavaScript...</p>
+                </video>
+                <div class="video-controls">
+                    <div class="video-title-container">
+                        <h3 id="current-video-title-text"></h3> 
+                    </div>
+                    <div class="action-buttons" style="display: flex; gap: 10px;">
+                        <button id="like-button" onclick="window.toggleLike()" style="width: auto;">
+                            👍 လိုက်ခ် (<span id="like-count">0</span>)
+                        </button>
+                        <a id="download-link" href="#" download style="width: auto;"><button style="width: auto;">⬇️ ဒေါင်းလုဒ်</button></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comments-section" style="width: 100%; margin-top: 0;">
+                <h4>မှတ်ချက်များ (<span id="comment-count">0</span>)</h4>
+                <div id="comments-list"></div>
+                <div class="comment-input-group">
+                    <input type="text" id="comment-input" placeholder="မှတ်ချက်ရေးပါ...">
+                    <button onclick="window.addComment()" style="width: 100px;">ပို့ရန်</button>
+                </div>
+            </div>
+
+            <div id="video-sidebar" class="sidebar">
+                <h4>ဗီဒီယို စာရင်း</h4>
+            </div>
+        </main>
+    </div>
+    <div id="profile-page" class="page" style="display: none;">
+        <h2>👤 User Profile</h2>
+        <p>ဤနေရာတွင် သင်၏ အချက်အလက်များကို ပြောင်းလဲနိုင်ပါသည်။</p>
+        
+        <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; text-align: center;">
+            <img id="profile-photo" src="default_user.png" alt="Profile Photo" 
+                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid #333;">
+            
+            <input type="file" id="photo-upload-input" accept="image/*" style="display: block; margin: 10px auto;">
+            <button onclick="uploadProfilePhoto()" style="background-color: #28a745; color: white;">Upload Photo</button>
+            <div id="photo-upload-message" style="margin-top: 5px; color: green; font-weight: bold;"></div>
+        </div>
+        
+        <div id="user-info-display">
+            <p><strong>Username:</strong> <span id="display-username">Loading...</span></p>
+            <p><strong>Email:</strong> <span id="display-email">Loading...</span></p>
+            <p><strong>Account Creation Date:</strong> <span id="creation-date">Loading...</span></p>
+        </div>
+
+        <hr style="margin: 20px 0;">
+
+        <h3>✏️ Change Username</h3>
+        <input type="text" id="new-username-input" placeholder="New Username" style="width: 100%; padding: 8px; margin-bottom: 5px;">
+        <button onclick="changeUsername()" style="background-color: #007bff; color: white;">Save Username</button>
+        <div id="username-message" style="margin-top: 5px; color: green;"></div>
+
+        <hr style="margin: 20px 0;">
+
+        <h3>🔒 Password Reset</h3>
+        <p>Password အသစ်တစ်ခု ရယူရန်အတွက် သင့် Email သို့ Reset Link ပို့ပါမည်။</p>
+        <button onclick="sendPasswordResetEmail()" style="background-color: #ffc107; color: #333; border: none;">Send Reset Link</button>
+        <div id="password-reset-message" style="margin-top: 5px; color: orange;"></div>
+        
+        <hr style="margin: 20px 0;">
+
+        <button onclick="showPage('admin-page')" id="admin-nav-button" style="display:none; background-color: darkred; color: white; padding: 10px 15px;">
+            👑 Admin Panel
+        </button>
+    </div>
+    <div id="admin-page" class="page" style="display: none;">
+        <h2>👑 Admin Panel</h2>
+        
+        <div style="padding: 10px; border: 2px solid darkred; margin-bottom: 20px;">
+            <p id="admin-status" style="font-weight: bold; color: darkred;">Admin ခွင့်ပြုချက် စစ်ဆေးနေပါသည်။...</p>
+        </div>
+        
+        <div id="user-list-container">
+            <h3>Registered Users (from Firestore)</h3>
+            <p>မှတ်ပုံတင်ထားသော User များစာရင်းကို ပြသထားပါသည်။</p>
+            
+            <ul id="user-list" style="list-style-type: none; padding: 0;">
+                <li>Please wait...</li> 
+            </ul>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-storage-compat.js"></script>
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script src="app.js"></script>
+ 
+</body>
+  </html>
+  
