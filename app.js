@@ -93,6 +93,7 @@ window.handleRegister = async () => {
     const emailInput = document.getElementById('register-username').value.trim();
     const password = document.getElementById('register-password').value.trim();
     const messageDiv = document.getElementById('register-message');
+    // 💡 FIX: Email ကို @dummy.com ဖြင့် ပြန်လည်ဖွဲ့စည်းသည်
     const email = emailInput.includes('@') ? emailInput : `${emailInput}@dummy.com`; 
 
     if (password.length < 6) { messageDiv.textContent = 'လျှို့ဝှက်နံပါတ်သည် ၆ လုံးထက် မနည်းရပါ။'; return; }
@@ -100,12 +101,14 @@ window.handleRegister = async () => {
 
     try {
         const result = await window.auth.createUserWithEmailAndPassword(email, password); 
+        // 🚨 FIX: displayName ကို ချက်ချင်း update လုပ်သည်
         await window.auth.currentUser.updateProfile({ displayName: emailInput });
+        
+        // ✅ FIX: result.user (Auth user object) ကိုသာ ပို့ပြီး UID, registeredAt တို့ကို saveUserDataToFirestore မှ ကိုင်တွယ်စေသည်
         await saveUserDataToFirestore(result.user); 
         
         messageDiv.textContent = 'မှတ်ပုံတင် အောင်မြင်ပါသည်။ ခဏစောင့်ပါ။'; 
         
-        // ✅ Login ပြဿနာ ဖြေရှင်းနည်း: 100ms delay ဖြင့် Home Page ကို သေချာပို့ခြင်း
         setTimeout(() => { showPage('home-page'); }, 100); 
 
     } catch (error) {
@@ -125,11 +128,12 @@ window.handleLogin = async () => {
 
     try {
         const result = await window.auth.signInWithEmailAndPassword(email, password); 
+        
+        // ✅ FIX: result.user (Auth user object) ကိုသာ ပို့ပြီး lastLoginAt ကို update လုပ်စေသည်
         await saveUserDataToFirestore(result.user); 
         
         messageDiv.textContent = 'Login အောင်မြင်ပါသည်။'; 
         
-        // ✅ Login ပြဿနာ ဖြေရှင်းနည်း: 100ms delay ဖြင့် Home Page ကို သေချာပို့ခြင်း
         setTimeout(() => { showPage('home-page'); }, 100); 
 
     } catch (error) {
