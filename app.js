@@ -267,7 +267,6 @@ window.deleteMessage = async (messageId) => {
 };
 
 // Chat Message များ Real-time Load လုပ်ခြင်း
-// Chat Message များ Real-time Load လုပ်ခြင်း
 function loadChatMessages() {
     if (unsubscribeChat) unsubscribeChat(); 
 
@@ -290,7 +289,7 @@ function loadChatMessages() {
                 const displayUsername = data.username.split('@')[0];
                 const displayName = isUserAdmin ? `${displayUsername} 👑` : displayUsername;
                 
-                // 🚨 FIX: Delete Button CSS ကို ပိုမို ခိုင်မာစေရန် ပြင်ဆင်သည်
+                // 🚨 FIX: Delete Button CSS ကို ပြန်စစ်ဆေးသည်
                 const deleteButtonHtml = (currentUser && currentUser.email === ADMIN_EMAIL) 
                     ? `<button onclick="window.deleteMessage('${messageId}')" style="background: none; border: none; color: #e74c3c; font-size: 10px; cursor: pointer; float: right; margin-left: 5px; width: auto; margin-top: 0; padding: 0;">[X]</button>`
                     : '';
@@ -312,10 +311,13 @@ function loadChatMessages() {
             });
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         }, error => {
+            // 🚨 FIX: Chat Load Error Handling ပိုကောင်းလာသည်
             console.error("Error loading chat messages:", error);
-            chatMessagesDiv.innerHTML = '<p style="color: red;">Chat messages များကို Load မလုပ်နိုင်ပါ။</p>';
+            const errorMessage = (error.code === 'permission-denied') ? "❌ Chat messages များကို Load မလုပ်နိုင်ပါ။ (Firestore Rules မှ 'chats' collection ကို စစ်ပါ)" : `❌ Error: ${error.message}`;
+            chatMessagesDiv.innerHTML = `<p style="color: red;">${errorMessage}</p>`;
         });
 }
+
 
 // =================================================
 // 🚨 Part 6: Video Player & Data Persistence Logic (Like/Comment/Sidebar)
@@ -559,14 +561,14 @@ window.checkAdminStatus = async () => {
 
 // 2. User List ကို Firestore မှ Real-time Fetch လုပ်ခြင်း
 window.fetchUserList = () => {
-    // ယခင် Listener ရှိပါက ဖြုတ်ပါ (Global variable "unsubscribeUsers" ကို သုံးပါ)
     if (unsubscribeUsers) unsubscribeUsers();
 
     const userListElement = document.getElementById('user-list');
     userListElement.innerHTML = '<li>Loading users...</li>';
     
     unsubscribeUsers = window.db.collection('users')
-        .orderBy('registeredAt', 'desc')
+        // 💡 FIX: order by ကို registeredAt သို့မဟုတ် email ဖြင့် ထားပါ။ email ကို အသုံးပြုခြင်းသည် ပို၍ လုံခြုံပါသည်။
+        .orderBy('email', 'asc') // စာရင်းကို Email အလိုက် စီပါ
         .onSnapshot(snapshot => {
             userListElement.innerHTML = ''; 
             snapshot.forEach(doc => {
@@ -575,13 +577,17 @@ window.fetchUserList = () => {
                 const displayName = userData.displayName || userData.email.split('@')[0];
                 const isAdmin = userData.email === ADMIN_EMAIL ? ' (👑 Admin)' : '';
                 
+                // 🚨 FIX: registeredAt မရှိခဲ့ရင် N/A ပြပါ၊ Date parsing error ကို ရှောင်ပါ
+                const registeredDate = userData.registeredAt 
+                    ? (userData.registeredAt.toDate ? userData.registeredAt.toDate().toLocaleDateString() : new Date(userData.registeredAt).toLocaleDateString())
+                    : 'N/A';
+                
                 listItem.innerHTML = `
-                    <div style="border: 1px 
-                     solid #ccc; padding: 10px; margin-bottom: 5px; border-radius: 4px; background: ${userData.email === ADMIN_EMAIL ? '#ffe0e0' : '#f9f9f9'};">
+                    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 5px; border-radius: 4px; background: ${userData.email === ADMIN_EMAIL ? '#ffe0e0' : '#f9f9f9'};">
                         <strong>Username:</strong> ${displayName} ${isAdmin}<br>
                         <strong>Email:</strong> ${userData.email}<br>
                         <strong>UID:</strong> ${userData.uid ? userData.uid.substring(0, 10) + '...' : 'N/A'}<br>
-                        <strong>Registered:</strong> ${userData.registeredAt ? new Date(userData.registeredAt.seconds * 1000).toLocaleDateString() : 'N/A'}
+                        <strong>Registered:</strong> ${registeredDate}
                     </div>
                 `;
                 userListElement.appendChild(listItem);
@@ -589,7 +595,12 @@ window.fetchUserList = () => {
         }, error => {
             console.error("Error fetching user list:", error);
             const adminMessageElement = document.getElementById('admin-message');
-            adminMessageElement.innerHTML = `❌ Error: Permission Denied. Check Firestore Rules for 'users' collection!`;
+            // 💡 Firestore Rule မှ Permission Error ဖြစ်ပါက စစ်ဆေးရန် သတိပေးပါ
+            if (error.code === 'permission-denied') {
+                 adminMessageElement.innerHTML = `❌ Error: Permission Denied. Admin မှလွဲ၍ ကျန် User များ မပေါ်ပါက Firestore Rules မှ 'users' collection ကို check ပါ!`;
+            } else {
+                 adminMessageElement.innerHTML = `❌ Error: ${error.message}`;
+            }
             adminMessageElement.style.color = 'red';
             userListElement.innerHTML = `<li>Error: ${error.message}</li>`;
         });
