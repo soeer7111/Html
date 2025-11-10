@@ -25,14 +25,26 @@ let unsubscribeUsers; // User list listener ကို သိမ်းရန် (
 // 💡 Helper: Firestore တွင် User Data သိမ်းခြင်း (Register/Login တွင် လိုအပ်ပါက)
 async function saveUserDataToFirestore(user) {
     const userRef = window.db.collection('users').doc(user.uid);
+    const displayName = user.displayName || user.email.split('@')[0];
+    const isAdmin = user.email === ADMIN_EMAIL; // Admin Status ကိုပါ ထည့်သွင်းသည်။
+    
+    // 🚨 FIX: User Data ကို ရယူပြီး registeredAt ရှိ/မရှိ စစ်ဆေးသည်
+    const existingDoc = await userRef.get();
+    
+    // ⚠️ registeredAt ကို Firestore တွင် မရှိသေးမှသာ serverTimestamp ဖြင့် အသစ်ထည့်သည်
+    const registeredAtValue = existingDoc.exists && existingDoc.data().registeredAt 
+                                ? existingDoc.data().registeredAt 
+                                : window.firebase.firestore.FieldValue.serverTimestamp();
+
     await userRef.set({ 
         uid: user.uid,
         email: user.email, 
-        displayName: user.displayName || user.email.split('@')[0],
-        registeredAt: window.firebase.firestore.FieldValue.serverTimestamp()
+        displayName: displayName,
+        isAdmin: isAdmin, // အနာဂတ်အတွက် Admin status ကိုပါ ထည့်သွင်းသည်
+        registeredAt: registeredAtValue, // မှတ်ပုံတင်ချိန်ကို တစ်ခါတည်း မှတ်သားသည်
+        lastLoginAt: window.firebase.firestore.FieldValue.serverTimestamp() // Login အချိန်ကို update လုပ်သည်
     }, { merge: true });
 }
-
 // =================================================
 // 🚨 Part 2: Page Navigation & UI Functions
 // =================================================
@@ -510,6 +522,17 @@ function renderComments(video) {
         commentsList.appendChild(div);
     });
 }
+// 💡 လက်ရှိဖွင့်ထားသော Video ကို Highlight လုပ်ခြင်း Function
+function updateSidebarHighlight() {
+    document.querySelectorAll('.sidebar-item').forEach((item, index) => {
+        if (index === currentVideoIndex) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+}
+
 
 // 💡 Sidebar Video List များကို Render လုပ်ခြင်း
 function renderSidebar() {
