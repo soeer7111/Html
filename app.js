@@ -26,21 +26,21 @@ let unsubscribeUsers; // User list listener ကို သိမ်းရန် (
 async function saveUserDataToFirestore(user) {
     const userRef = window.db.collection('users').doc(user.uid);
     const displayName = user.displayName || user.email.split('@')[0];
-    const isAdmin = user.email === ADMIN_EMAIL; // Admin Status ကိုပါ ထည့်သွင်းသည်။
+    const isAdmin = user.email === ADMIN_EMAIL;
     
     // 🚨 FIX: User Data ကို ရယူပြီး registeredAt ရှိ/မရှိ စစ်ဆေးသည်
     const existingDoc = await userRef.get();
     
-    // ⚠️ registeredAt ကို Firestore တွင် မရှိသေးမှသာ serverTimestamp ဖြင့် အသစ်ထည့်သည်
+    // ⚠️ registeredAt ကို Firestore တွင် မရှိသေးမှသာ serverTimestamp ဖြင့် အစောဆုံး မှတ်သားသည်
     const registeredAtValue = existingDoc.exists && existingDoc.data().registeredAt 
                                 ? existingDoc.data().registeredAt 
                                 : window.firebase.firestore.FieldValue.serverTimestamp();
 
     await userRef.set({ 
-        uid: user.uid,
+        uid: user.uid, // 🚨 FIX: UID ကို ဤနေရာတွင် အမြဲတမ်း သေချာထည့်သွင်းသည်
         email: user.email, 
         displayName: displayName,
-        isAdmin: isAdmin, // အနာဂတ်အတွက် Admin status ကိုပါ ထည့်သွင်းသည်
+        isAdmin: isAdmin, 
         registeredAt: registeredAtValue, // မှတ်ပုံတင်ချိန်ကို တစ်ခါတည်း မှတ်သားသည်
         lastLoginAt: window.firebase.firestore.FieldValue.serverTimestamp() // Login အချိန်ကို update လုပ်သည်
     }, { merge: true });
@@ -93,6 +93,51 @@ window.handleRegister = async () => {
     const emailInput = document.getElementById('register-username').value.trim();
     const password = document.getElementById('register-password').value.trim();
     const messageDiv = document.getElementById('register-message');
+    const email = emailInput.includes('@') ? emailInput : `${emailInput}@dummy.com`; 
+
+    if (password.length < 6) { messageDiv.textContent = 'လျှို့ဝှက်နံပါတ်သည် ၆ လုံးထက် မနည်းရပါ။'; return; }
+    messageDiv.textContent = 'မှတ်ပုံတင်နေပါသည်။ ကျေးဇူးပြု၍ စောင့်ဆိုင်းပါ။';
+
+    try {
+        const result = await window.auth.createUserWithEmailAndPassword(email, password); 
+        await window.auth.currentUser.updateProfile({ displayName: emailInput });
+        
+        // ✅ FIX: result.user ကို ပို့ပြီး registeredAt ကို စတင် မှတ်သားစေသည်
+        await saveUserDataToFirestore(result.user); 
+        
+        messageDiv.textContent = 'မှတ်ပုံတင် အောင်မြင်ပါသည်။ ခဏစောင့်ပါ။'; 
+        setTimeout(() => { showPage('home-page'); }, 100); 
+    } catch (error) {
+        if (error.code === 'auth/email-already-in-use') { messageDiv.textContent = 'ဤအသုံးပြုသူအမည်ကို အသုံးပြုပြီးသား ဖြစ်ပါသည်။'; } 
+        else { messageDiv.textContent = `Error: ${error.message}`; }
+    }
+};
+
+// 2. Login Function
+window.handleLogin = async () => {
+    // ... (ကနဦး စစ်ဆေးချက်များ) ...
+
+    try {
+        const result = await window.auth.signInWithEmailAndPassword(email, password); 
+        
+        // ✅ FIX: Login ဝင်တိုင်း lastLoginAt ကို Update လုပ်ပြီး registeredAt ကို စစ်ဆေးသည်
+        await saveUserDataToFirestore(result.user); 
+        
+        messageDiv.textContent = 'Login အောင်မြင်ပါသည်။'; 
+        setTimeout(() => { showPage('home-page'); }, 100); 
+
+    } catch (error) {
+        messageDiv.textContent = 'အသုံးပြုသူအမည် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။';
+    }
+// =================================================
+// 🚨 Part 3: Authentication (Login/Register/Logout/State Check)
+// =================================================
+
+// 1. Register Function 
+window.handleRegister = async () => {
+    const emailInput = document.getElementById('register-username').value.trim();
+    const password = document.getElementById('register-password').value.trim();
+    const messageDiv = document.getElementById('register-message');
     // 💡 FIX: Email ကို @dummy.com ဖြင့် ပြန်လည်ဖွဲ့စည်းသည်
     const email = emailInput.includes('@') ? emailInput : `${emailInput}@dummy.com`; 
 
@@ -101,14 +146,12 @@ window.handleRegister = async () => {
 
     try {
         const result = await window.auth.createUserWithEmailAndPassword(email, password); 
-        // 🚨 FIX: displayName ကို ချက်ချင်း update လုပ်သည်
         await window.auth.currentUser.updateProfile({ displayName: emailInput });
         
-        // ✅ FIX: result.user (Auth user object) ကိုသာ ပို့ပြီး UID, registeredAt တို့ကို saveUserDataToFirestore မှ ကိုင်တွယ်စေသည်
+        // ✅ FIX: result.user ကို ပို့ပြီး registeredAt ကို စတင် မှတ်သားစေသည်
         await saveUserDataToFirestore(result.user); 
         
         messageDiv.textContent = 'မှတ်ပုံတင် အောင်မြင်ပါသည်။ ခဏစောင့်ပါ။'; 
-        
         setTimeout(() => { showPage('home-page'); }, 100); 
 
     } catch (error) {
@@ -129,11 +172,10 @@ window.handleLogin = async () => {
     try {
         const result = await window.auth.signInWithEmailAndPassword(email, password); 
         
-        // ✅ FIX: result.user (Auth user object) ကိုသာ ပို့ပြီး lastLoginAt ကို update လုပ်စေသည်
+        // ✅ FIX: Login ဝင်တိုင်း lastLoginAt ကို Update လုပ်ပြီး registeredAt ကို စစ်ဆေးသည်
         await saveUserDataToFirestore(result.user); 
         
         messageDiv.textContent = 'Login အောင်မြင်ပါသည်။'; 
-        
         setTimeout(() => { showPage('home-page'); }, 100); 
 
     } catch (error) {
